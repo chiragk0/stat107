@@ -1,0 +1,270 @@
+---
+title: "HW 7"
+author: "Chirag Kulkarni (862132127)"
+output: 
+  html_document:
+    highlight: pygments
+    theme: cerulean
+    toc: true
+    toc_depth: 4
+    number_sections: false
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+mainfont: FiraSans
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(magrittr)
+library(knitr)
+```
+
+## Question 1
+
+A production process that creates specialized dog collars operates with 7% nonconforming (defective) output. A sample of 12 collars is selected at random and the number of nonconforming collars is counted. A sample has just been selected.
+
+Let Y = number of nonconforming collars. Then Y∼b(y;n=12,p=0.07). Use this information to complete the following.
+
+### Q1, Part (i)
+
+```{r}
+#generates a dataframe/tibble named dog_collars and 
+#generate a column named y which contains the sequence 0 through 12
+dog_collars <-
+  tibble(x = 0:12)
+dog_collars
+```
+
+### Q1, Part (ii)
+```{r, eval=TRUE}
+#generates the probability distribution function of y and store the values in a new column named pdf1
+#side note: pdf = probability distribution function
+dog_collars <-
+  dog_collars %>%
+    mutate(pdf1 = dbinom(x, size = 12, prob = 0.07))
+dog_collars
+```
+
+### Q1, Part (iii)
+```{r, eval=TRUE}
+#generates the cumulative distribution function of Y and store the values in the variable cdf1
+#side note: cdf = cumulative distribution function
+dog_collars <-
+  dog_collars %>%
+    mutate(cdf1 = pbinom(x, size = 12, prob = 0.07))
+dog_collars
+```
+
+### Q1, Part (iv)
+```{r, eval=TRUE}
+#generates the values of P(Y>y) and store the values in the variable sdf1
+#side note: sdf = survival distribution function
+dog_collars <-
+  dog_collars %>%
+    mutate(sdf1 = 1 - pbinom(x, size = 12, prob = 0.07))
+dog_collars
+```
+
+### Q1, Part (v)
+```{r, eval=TRUE}
+#finds the probability that exactly 3 of the 12 collars are nonconforming (defective)
+#exact probabilities are PMFs
+#P(Y = 3)
+dbinom(3, size = 12, prob = 0.07)
+```
+
+### Q1, Part (vi)
+```{r, eval=TRUE}
+#finds the probability that at most 3 of the 12 collars are nonconforming (defective)
+#P(Y <= 3)
+pbinom(3, size = 12, prob = 0.07)
+```
+
+### Q1, Part (vii)
+```{r, eval=TRUE}
+#finds the probability that between, and including, 2 and 4 of the 12 collars are nonconforming (defective)
+#P(2 <= Y <= 4)
+# =P(Y <= 4) - P(Y <= 1)
+pbinom(4, size = 12, prob = 0.07) - pbinom(1, size = 12, prob = 0.07)
+```
+
+### Q1, Part (viii)
+```{r}
+#generates a plot of y vs pdf1
+dog_collars %$%
+  plot(x, pdf1,
+       main = "y vs pdf1",
+       col = "blue",
+       type = "o",
+       pch = 18,
+       cex = 1.5
+       )
+```
+
+### Q1, Part (ix)
+```{r}
+#generates a plot of y vs cdf1
+dog_collars %$%
+  plot(x, cdf1,
+       main = "y vs pdf1",
+       col = "blue",
+       type = "o",
+       pch = 18,
+       cex = 1.5
+       )
+```
+
+
+## Question 2
+
+Suppose the filling process of a particular type of dry dog food bag is normally distributed with a mean of 40 pounds and a standard deviation of 0.50 pounds.
+The filling process is considered to be functioning at an appropriate level (functioning “in control”) if the amount of fill in the dog food bags is between 38.75 pounds and 41.25 pounds. Lauren selects a dog food bag at random from the assembly line.
+
+### Q2, Part (i)
+```{r}
+#for reference: mean = 40, sd = 0.50
+#P(X < 38.75)
+pnorm(38.75, mean = 40, sd = 0.50)
+```
+
+### Q2, Part (ii)
+```{r}
+#P(X >= 38.75)
+# = 1 - P(X < 38.75)
+1 - pnorm(38.75, mean = 40, sd = 0.50)
+```
+
+### Q2, Part (iii)
+```{r}
+#P(38.75 > X > 41.25)
+#p(X > x) = (1 - p(X <= x)) 
+#P(X < x) = (1 -P(X >= x))
+#P(x > X > y) = (1 - p(X <= x)) - (1 -P(X >= x))
+(pnorm(41.25, mean = 40, sd = 0.50, lower.tail = FALSE))- (1 - pnorm(38.75, mean = 40, sd = 0.50))
+```
+
+### Q2, Part (iv)
+```{r}
+#P(38.75 <= X <= 41.25) 
+# = P(X ≤ 41.25) − P(X < 38.75)
+# = P(X ≤ 41.25) − P(X ≤ 38.75)
+pnorm(41.25, mean = 40, sd = 0.50)- pnorm(38.75,40,0.50)
+```
+
+### Q2, Part (v)
+```{r}
+#finds the 97th percentile
+qnorm(p = 0.97, mean = 40, sd = 0.50)
+```
+
+
+## Question 3
+
+According to a recent survey, 65% of dog owners prefer a male dog. A random sample of 30 dog owners is selected.
+
+### Q3, Part (i)
+```{r}
+#for reference: size = 30, prob = 0.65
+#Exact probabilities are PMFs
+#P(X = 15)
+dbinom(15, size = 30, prob = 0.65)
+```
+
+### Q3, Part (ii)
+```{r}
+#P(X <= 15)
+pbinom(15, size = 30, prob = 0.65)
+```
+
+### Q3, Part (iii)
+```{r}
+#P(16 <= X <= 19)
+# = P(X <= 19) - P(X < 16)
+# = P(X <= 19) - P(X <= 15)
+pbinom(19, size = 30, prob = 0.65) - pbinom(15, size = 30, prob = 0.65)
+```
+
+### Q3, Part (iv)
+```{r}
+#finds the average number of dog owners that one would expect to prefer a male dog
+n <- 30
+# The success probability for each trial
+p <- 0.65
+# Expexted value
+expected_value <- n * p
+# Print to check
+expected_value
+```
+
+
+## Question 4
+
+Suppose the filling process of a particular type of canned dog food is normally distributed with a mean of 13.25 ounces and a standard deviation of 0.075 ounces. The filling process is considered to be functioning at an appropriate level (functioning “in control”) if the amount of fill in the dog food cans is between 13.15 ounces and 13.35 ounces. Lauren selects a can of dog food at random from the assembly line.
+ 
+### Q4, Part (i)
+```{r}
+#for reference: normally distributed, mean = 13.25, sd = 0.075
+#underfilled: P(X < 13.15)
+pnorm(13.15, mean = 13.25, sd = 0.075)
+```
+
+### Q4, Part (ii)
+```{r}
+#not underfilled: P(X > 13.15)
+pnorm(13.15, mean = 13.25, sd = 0.075, lower.tail = FALSE)
+```
+
+### Q4, Part (iii)
+```{r}
+#appropriate level: 13.15 <= X <= 13.35
+pnorm(13.35, mean = 13.25, sd = 0.075) - pnorm(13.15, mean = 13.25, sd = 0.075)
+```
+
+### Q4, Part (iv)
+```{r}
+#overfilled or underfilled: P(X < 13.15 or X > 13.35)
+# = P(X <= 12.15) + P(X > 12)
+pnorm(12.15, mean = 13.25, sd = 0.075) + pnorm(13.35, mean = 13.25, sd = 0.075, lower.tail = FALSE)
+```
+
+### Q4, Part (v)
+```{r}
+#finds the 98th percentile
+qnorm(p = 0.98, mean = 13.25, sd = 0.075)
+```
+
+
+## Question 5
+
+Use set.seed(2021) and simulate a sample according to the following instructions. Please use set.seed(2021) before the code for each simulation.
+
+### Q5, Part (i)
+```{r}
+#simulates a sample of 7 observations from a binomial distribution with 12 trials and a success probability of 0.27
+set.seed(2021)
+rbinom(7, size = 12, prob = 0.27)
+```
+
+### Q5, Part (ii)
+```{r}
+#simulates a sample of 4 observations from a Poisson distribution with an expected value of 5
+set.seed(2021)
+rpois(4, lambda = 5)
+```
+
+### Q5, Part (iii)
+```{r}
+#simulates a sample of 5 observations from a normal distribution with a mean of -20 and standard deviation of 2
+set.seed(2021)
+rnorm(5, mean = -20, sd = 2)
+```
+
+### Q5, Part (iv)
+```{r}
+#simulates a sample of 2 observations from an exponential distribution with a rate of 107
+set.seed(2021)
+rexp(2, rate = 107)
+```
+

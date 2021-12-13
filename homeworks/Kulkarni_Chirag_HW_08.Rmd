@@ -1,0 +1,342 @@
+---
+title: 'HW 08: Control Flow'
+author: "Chirag Kulkarni"
+date: "3/2/2021"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    number_sections: false
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(magrittr)
+```
+
+## Question 1
+Use the ifelse function to return “GROWING” if the elements of a vector x, with length 3, are strictly increasing, and “NOT growing” otherwise.
+```{r}
+#sets the three elements of the vector "x"
+x <- c(11,22,33)
+#uses the ifelse function to check if the elements are strictly increasing
+growth <- ifelse(x[2]>x[1] & x[3]>x[2], "GROWING", "NOT growing")
+#prints "growth" to check
+growth
+```
+
+
+## Question 2
+Use an else-if sequence to return “GROWING” if the elements of a vector x with length 3 are strictly increasing, “SHRINKING” if the elements of a vector x with length 3 are strictly decreasing, and “PEAKING” otherwise. Store the result in a variable named growth_pattern.
+
+Then, use the switch() function to return the vector c("small", "Medium", "LARGE") if growth_pattern is "GROWING", return the factor factor(c("HUGE", "Teeny", "tiny")) if growth_pattern is "SHRINKING", and return the list list("valley", "PEAK", "valley") otherwise. Assign the result of switch size_pattern.
+```{r}
+#sets an initial vector with length 3
+x <- c(11,22,33)
+growth_pattern<-
+#if the elements of the vector are growing, print "GROWING"
+if (x[2]>x[1] & x[3]>x[2]){
+  print("GROWING")
+#if the elements of the vector are shrinking, print "SHRINKING"
+}else if (x[1]>x[2] & x[2]>x[3]){
+  print("SHRINKING")
+#if the elements of the vector are doing anything else, print "PEAKING"
+}else{
+  print("PEAKING")
+}
+#prints growth pattern to check
+growth_pattern
+size_pattern<-
+switch(growth_pattern,
+       #if the elements are growing, print: "small", "Medium", "LARGE"
+       "GROWING" = c("small", "Medium", "LARGE"),
+       #if the elements are shrinking, print the factor: "HUGE", "Teeny", "tiny"
+       "SHRINKING" = factor(c("HUGE", "Teeny", "tiny")),
+       #if the elements are doing anything else print the list: "valley", "PEAK", "valley"
+       "PEAKING"=list("valley", "PEAK", "valley")
+       )
+#prints size_pattern to check
+size_pattern
+```
+
+
+## Question 3
+Create a control sequence that, given a numeric vector x of length 3, will print the elements by order from high to low.
+```{r}
+#sets an initial vector with length 3
+x <- c(17, 3, 8)
+
+#if the initial first element is greater than the initial second element, than 
+#the initial first element comes first and the initial second element comes second
+if (x[1] > x[2]){
+    fir <- x[1]
+    sec <- x[2]
+#else the initial second element comes first and the initial first element comes second
+} else {
+    fir <- x[2]
+    sec <- x[1]
+}
+#if the initial third element is greater than the designated first element and
+#the designated second element, the designated second element becomes the third designated 
+#element, the designated first element becomes the designated second element, and the 
+#third element becomes the designated first element
+if ( x[3] > fir & x[3] > sec ) {
+    thi <- sec
+    sec <- fir
+    fir <- x[3]
+#else if the third element is less than the first and second designated elements,
+#then the third element stays as the designated third element.
+} else if ( x[3] < fir & x[3] < sec ) {
+    thi <- x[3]
+#else the designated second element becomes the designated third element and the 
+#third element becomes the designated second element
+} else {
+    thi <- sec
+    sec <- x[3]
+}
+#concatenates and prints the respective first, second, and third elements
+cat (fir, sec, thi, "\n")
+```
+
+
+## Question 4
+Write a for loop that iterates over the column names of the inbuilt iris dataset and print each, together with the number of characters in the column name in parentheses.
+
+Example output: Sepal.Length (12).
+
+Use the following functions, and any others you wish: paste0() and nchar().
+```{r}
+#this is a for loop that iterates over the column names of the inbuilt iris dataset 
+#and print each, together with the number of characters in the column name in parentheses.
+for (n in names(iris)) {
+  print(paste0(n, " (", nchar(n), ")"))
+}
+```
+
+
+## Question 5
+Use a nested for loop (a for loop inside a for loop) that produces the following matrix, preallocate the matrix with NA values to a variable named row_minus_col.
+```{r}
+#creates a 5 by 5 matrix to set our conditions in
+row_minus_col <- matrix(NA_integer_, nrow = 5, ncol = 5)
+#creates a nested for loop that creates the given matrix
+for (i in 1:5) {
+  for (j in 1:5) {
+    row_minus_col[i, j] <- i-j
+  }
+}
+#prints out the final result
+row_minus_col
+```
+
+
+## Question 6
+Use a nested for loop (a for loop inside a for loop) that produces the following matrix, preallocate the matrix with NA values to a variable named row_col_distance.
+```{r}
+#creates a 5 by 5 matrix to set our conditions in 
+row_col_distance <- matrix(NA_integer_, nrow = 5, ncol = 5)
+#creates a nested for loop that creates the given matrix
+for (i in 1:5) {
+  for (j in 1:5) {
+    row_col_distance[i, j] <- abs(i - j)
+  }
+}
+#prints out the final result
+row_col_distance
+```
+
+
+## Question 7
+Use a while loop to investigate the number of terms required before the product
+1⋅2⋅3⋅4⋅…
+reaches above 1 million.
+```{r}
+#sets the target to reach as one million
+target <- 1000000
+#sets the initial product value to 1
+product <- 1
+#sets the count to 0
+n <- 0
+#fidns the number of terms requred before the product reaches one million
+while (product <= target) {
+  n <- n + 1
+  product <- product*n
+}
+#prints the final count
+n
+```
+
+
+## Question 8
+Implement a multiplication game, a repeat loop (4 pts) that gives the user two random numbers from 2 to 12 (2 pts). Be sure the loop:
+
+• Prints a message that asks the user to produce the product of the two numbers (include the actual numbers in the message). (2 pts)
+• Takes their response as input using readline(). (2 pts)
+• If their answer is correct:
+    • Adds one to the correct answers count. (2 pts)
+    • Let’s them know the answer is right. (2 pts)
+    • Breaks if the number of correct answers has reached 5. (2 pts)
+    • Tells them how many more correct guesses they need before the game is over. (4 pts)
+• If their answer is NOT correct:
+    • Let’s them know the answer is wrong. (2 pts)
+```{r, eval=FALSE}
+#sets 0 as the initial count
+score <- 0
+#gives the user 2 random numbers labeled num1 and num2 whenever the score is less
+#than 5
+while(score < 5){
+  num1 <- sample(2:12, 1)
+  num2 <- sample(2:12, 1)
+  ans <- num1 * num2
+  #takes in the user response using readline()
+  cat(paste0("What is", num1, "x", num2, "? \n"))
+  user_response <- readline()
+  #if the response is correct, adds one to the correct answers count and lets
+  #them know their answer is correct
+  if(user_response == ans){
+    score <- score + 1
+    cat("Your answer is right! \n")
+  #if the user's score is equal to 5, the game exits
+    if(score == 5){
+      break
+    }
+  #informs the user that they need 5 minus their current score in order to complete the game
+    cat(paste0("You need ", 5 - score, "more correct guesses before the game is over. \n"))
+  #if the user's response is incorrect, this lets them know
+  }else{
+    cat("You're answer is wrong. \n")
+  }
+}
+```
+
+## Question 9
+Initialize a data frame named my_binom_stats with 18 rows and 2 columns. Name the first column y and the second column pdf_y. Set the first column, y, to the possible outcomes from a Binom(size=17,prob=0.83) (BE CAREFUL WITH THIS STEP!), and fill pdf_y using the appropriate stats package function.
+
+Initialize a second, empty data frame named my_binom_loops with 18 rows and 2 columns. Name the first column y and the second column pdf_y. Then, using nested loops:
+• Iterate over the 18 rows.
+• Iterate over the 2 columns
+• IF the inner loop is on the first column, add the appropriate number to the y column.
+• OTHERWISE, fill pdf_y using the appropriate stats package function.
+
+
+Finally, use the all_equal() function (from the dplyr package) to confirm that the my_binom_stats and the my_binom_loops data frames are equivalent.
+```{r}
+#initializes a data frame named my_binom_stats with 18 rows and 2 columns
+my_binom_stats <- data.frame(matrix(nrow = 18, ncol = 2))
+#names the first column y and the second column pdf_y
+colnames(my_binom_stats) <- c("y", "pdf_y")
+#Set the first column, y, to the possible outcomes from a Binom(size=17,prob=0.83)
+my_binom_stats$y <- c(0:17)
+#fills the probability density function of y
+my_binom_stats$pdf_y <- dbinom(0:17, size = 17, prob = 0.83)
+my_binom_stats
+
+#initializes a data frame named my_binom_loops with 18 rows and 2 columns
+my_binom_loops <- data.frame(matrix(nrow = 18, ncol = 2))
+#names the first column y and the second column pdf_y
+colnames(my_binom_loops) <- c("y", "pdf_y")
+#iterates over the rows and columns and fulfills the given tasks
+for(i in 1:18){
+  for(j in 1:2){
+    if(j==1){
+      my_binom_loops$y = c(0:17)
+    }else{
+      my_binom_loops$pdf_y = dbinom(0:17, size = 17, prob = 0.83)
+    }
+  }
+}
+
+#uses the all_equal function to check if my_binom_stats and my_binom_loops are equivalent
+all_equal(my_binom_stats, my_binom_loops)
+```
+
+
+## Question 10
+Using set.seed(147) and the sample() function, randomly rearrange the rows of my_binom_stats from the previous question. Assign the result to my_binom_shuffle. What are the top 6 values in y?
+```{r}
+set.seed(147)
+#randomly rearranges the rows of my_binom_stats and assigns it to my_binom_shuffle
+my_binom_shuffle <- sample(nrow(my_binom_stats))
+#prints my_binom_shuffle
+my_binom_shuffle
+
+#The top 6 values in "y" are 13,15,2,1,9,3
+```
+
+
+## Question 11
+Read in the “gas.tsv” file available on Canvas. It contains the cost of filling a car with either premium or regular gas. Store the result in a variable named messy_gas. Each row represents a single car (this fact is important, you may need to modify messy_gas to account for this!!!).
+
+
+Tidy the data set using pivot_longer(). Store the result in a data frame named pivot_gas.
+
+Next, initialize an empty data frame named loop_gas that has the same column names as pivot_gas. Fill in the name and value columns with the values from messy_gas using control flow. You may fill in any other columns as you see fit.
+
+Finally, use the all_equal() function (from the dplyr package) to confirm that the pivot_gas and the loop_gas data frames are equivalent.
+```{r}
+messy_gas <-
+  # The file is actually CSV format!! NOTE: (3 pts)
+  read_csv("gas.tsv", 
+           skip = 3, # SKIP 3 LINES: NOTE: (2 pts)
+           col_types = cols())
+
+# Add a column identifying the vehicle NOTE: (2 pts)
+messy_gas <- 
+  messy_gas %>%
+  mutate(vehicle = 1:10)
+# messy_gas
+
+# Pivot longer ONLY the columns for gas type NOTE: (3 pts)
+pivot_gas <- 
+  messy_gas %>%
+  pivot_longer(cols = c("premium", "regular"))
+# pivot_gas
+
+
+# Initialize the empty data frame  
+# Does NOT need to be filled with NAs NOTE: (2 pts)
+loop_gas <- 
+  tibble(vehicle = rep(NA_integer_, 20),
+         name    = rep(NA_character_, 20),
+         value   = rep(NA_real_, 20))
+# loop_gas
+
+# Initialize the index for the `loop_gas` row NOTE: (2 pts)
+tidy_row <- 1
+
+# Iterate over the rows and columns of `messy_gas`. NOTE: (2 pts)
+# Since rows represent a specific car, using `car` as
+# the outer loop row index makes it clear
+for(car in 1:10){
+  # iterate over the first two columns of `messy_gas` NOTE: (1 pt)
+  for (column in 1:2){
+    # Identify which car the observation belongs to NOTE: (1 pts)
+    loop_gas[tidy_row, "vehicle"] <- car
+    
+    # conditionally label if the observation is for
+    # premium or regular gar, depending on which column
+    # of `messy_gas` we are reading from NOTE: (4 pts)
+    if(column == 1){
+      loop_gas[tidy_row, "name"] <- "premium"
+    } else {
+      loop_gas[tidy_row, "name"] <- "regular"
+    }
+    
+    # Asign the price value in `messy_gas` to the `value`
+    # column of `loop_gas` NOTE: (2 pts)
+    loop_gas[tidy_row, "value"] <- messy_gas[car, column]
+     
+    # Move on to the next row of loop_gas NOTE: (1 pt)
+    tidy_row <- tidy_row + 1
+  }
+}
+
+# loop_gas
+
+all_equal(loop_gas, pivot_gas)
+```
+
