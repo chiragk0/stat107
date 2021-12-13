@@ -1,0 +1,243 @@
+---
+title: 'STAT 147 | Practice Exercises'
+subtitle: "Central Limit Theorem (simulated using control flow)"
+author: "Kulkarni,Chirag (862132127)"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    number_sections: false
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Central Limit Theorem (CLT)
+
+### Simulating from a Normal distribution.
+
+```{r}
+#define the domain of x
+x <- seq(-3,3,0.01)
+#calculate the pdf of x at each point
+fx <- dnorm(x, mean=0, sd=1)
+
+#--------------------------------------------
+
+#plot the standard normal pdf
+plot(x,fx,
+     #Make it a line
+     type = 'l',
+     #Make it dashed
+     lty = 2, ylim = c(0,0.7),
+     #re-define the x and y labels
+     xlab = "x", ylab = "Density estimates",
+     #change the title
+     main = paste0("Normal density, approximate normal density, \nand approximate density of sample average, n=3")
+     )
+
+set.seed(2127)
+#generate a random sample of 100 N(0,1) variables
+rsamp <- rnorm(100)
+#add a density estimate of the random sample to the original plot
+lines(density(rsamp),
+      #make the line weight a little heavier
+      lwd = 2,
+      #set the color
+      col = 2)
+#add random points to the plot
+points(rsamp, rep(0,100), pch = ".", col = 2)
+
+#--------------------------------------------
+###################
+#Define the number of sample means to generate
+m = 100
+#initialize a vector in which to store the random estimates of the true mean
+res = numeric(m)
+#loop over the vector and fill it with the sample average
+#of three random N(0,1) RVs
+for(i in 1:m){
+  res[i] = mean(rnorm(3))
+}
+#add the random estimates to the plot in green
+points(res, rep(-0.01, 100), pch = ".", col = 3)
+#add a density estimate for the random estimates
+lines(density(res), lwd = 2, col = 3)
+#--------------------------------------------
+#add a legend
+legend("topleft",
+       #labels
+       legend = c("True pdf", "Estimated pdf", "Estimated pdf of x_bar"),
+       #colors
+       col = c(1,2,3),
+       #line type
+       lty = c(2,1,1),
+       #line weight
+       lwd = c(1,2,2))
+``` 
+
+### Simulating from a Uniform distribution.
+
+```{r}
+#define the domain of x
+x <- seq(0,1,0.01)
+#calculate the pdf of x at each point
+fx <- dunif(x, min=0, max=1)
+
+#--------------------------------------------
+#plot the original pdf
+plot(x,fx,
+     #Make it a line
+     type = 'l',
+     #Make it dashed
+     lty = 2,
+     #define the x and y limits
+     xlim = c(0,1), ylim = c(0, 13.5),
+     #change the x and y labels
+     xlab = "x", ylab = "Density estimate",
+     main = paste0("Density estimates of 500 sample-averages,",
+            "\neach calculated after drawing a sample size = n"))
+
+#--------------------------------------------
+#add a legend
+legend("topright",
+       #labels
+       legend = c("n = 2", "n = 15", "n = 25", "n = 100"),
+       #colors
+       col = c(2,15,25,100),
+       #line type
+       lty = 1)
+#--------------------------------------------
+#define how many random estimates to calc
+m = 500;
+#initialize a vector in which to store the 
+#random estimates of the true mean
+res = numeric(m)
+#--------------------------------------------
+#loop over the random sample sizes
+for(n in c(2,15,25,100)){
+  for(i in 1:m){
+    res[i] = mean(runif(n,0,1))
+  }
+  #for each sample size, add a density estimate to the plot
+  lines(density(res), lwd = 2, col = n)
+}
+```
+
+
+### Simulating from an Exponential distribution.
+
+```{r}
+#--------------------------------------------
+x <- seq(0,1,0.01)
+fx <- dexp(x, rate = 2)
+#--------------------------------------------
+#plot the ORIGINAL pdf
+plot(x,fx,
+     #Make it a line
+     type = 'l',
+     #Make it dashed
+     lty = 2,
+     #define the x and y limits
+     xlim = c(0,1), ylim = c(0, 13.5),
+     #change the x and y labels
+     xlab = "x", ylab = "Density estimate",
+     main = paste0("Density estimates of 500 sample-averages,",
+            "\neach calculated after drawing a sample size = n"))
+#--------------------------------------------
+#add a legend
+legend("topright",
+       #labels
+       legend = c("n = 2", "n = 15", "n = 25", "n = 100"),
+       #colors
+       col = c(2,15,25,100),
+       #line type
+       lty = 1)
+#--------------------------------------------
+#define how many random estimates to calc
+m = 500;
+#initialize a vector in which to store the 
+#random estimates of the true mean
+res = numeric(m)
+#--------------------------------------------
+#loop over the random sample sizes
+for(n in c(2,15,25,100)){
+  for(i in 1:m){
+    res[i] = mean(rexp(n,rate = 2))
+  }
+  #for each sample size, add a density estimate to the plot
+  lines(density(res), lwd = 2, col = n)
+}
+```
+
+
+### Simulating from a Beta distribution.
+
+```{r}
+x <- seq(0.01, 0.9999, 0.01)
+fx <- dbeta(x, shape1 = 1/2, shape2 = 1/2)
+#--------------------------------------------
+#plot the ORIGINAL pdf
+plot(x,fx,
+     #Make it a line
+     type = 'l',
+     #Make it dashed
+     lty = 2,
+     #define the x and y limits
+     xlim = c(0,1), ylim = c(0, 13.5),
+     #change the x and y labels
+     xlab = "x", ylab = "Density estimate",
+     main = paste0("Density estimates of 500 sample-averages,",
+            "\neach calculated after drawing a sample size = n"))
+#--------------------------------------------
+#add a legend
+legend("topright",
+       #labels
+       legend = c("n = 2", "n = 15", "n = 25", "n = 100"),
+       #colors
+       col = c(2,15,25,100),
+       #line type
+       lty = 1)
+#--------------------------------------------
+#define how many random estimates to calc
+m = 500;
+#initialize a vector in which to store the 
+#random estimates of the true mean
+res = numeric(m)
+#--------------------------------------------
+#loop over the random sample sizes
+for(n in c(2,15,25,100)){
+  for(i in 1:m){
+    res[i] = mean(rbeta(n,shape1 = 1/2, shape2 = 1/2))
+  }
+  #for each sample size, add a density estimate to the plot
+  lines(density(res), lwd = 2, col = n)
+}
+```
+
+
+<br>
+<br>
+<br>
+<br>
+<p style="font-size:30px;color:#003DA5">
+<b>Congratulations!</b>  You've completed the practice exercise.  Please be sure to submit your `.Rmd` and `.html` files to Canvas.
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,369 @@
+---
+title: 'STAT 147 | Practice Exercise'
+subtitle: 'R Markdown'
+author: "Chirag Kulkarni"
+date: "`r format(Sys.time(), '2 February, 2021')`"
+output:
+  html_document:
+    toc: yes 
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
+```
+
+**Acknowledgment**: Part of this R Markdown template is adapted from David Dalpiaz (UIUC) and Dr. Wenxiu Ma (UCR).
+
+
+# Instructions
+
+This week, you will first learn the basic R Markdown syntax. 
+
+- First, download the `rmd` file `Lastname_Firstname_practice_05_.Rmd` from Canvas. It gives you an option to "open" or "save". Make sure that you **save** the file to your computer to a known location.
+- Open the `rmd` file in RStudio and click **`Knit to HTML`** in the `Knit` dropdown menu to render it to HTML format. (You would need to install LaTex if you wanted to Knit to PDF).  
+- Read the `rmd` file and the rendered `html` file side-by-side to see how the `html` document was generated!  
+- Feel free to play around with this document! Change it. Break it. Fix it. The best way to learn R Markdown (or really almost anything) is to try, fail, then find out what you did wrong.
+
+Next, you will review some example code. 
+
+- Read over the code and the output. If you have any questions about certain functions or parameters, it is the time to ask!
+- There are some exercises through out this document. Replace **INSERT_YOUR_ANSWER** with your own answers, knit the file to HTML, and check your results.
+
+**Submission Guidelines**
+
+- After you completed all exercises, save your file to `Lastname_Firstname_practice_05.Rmd` (for example, `Flores_Analisa_practice_05.Rmd`). The html file will automatically have the same name as the .Rmd document once the .Rmd file is Knitted, but with a `.html` file extension (for example, `Flores_Analisa_practice_05.html`).
+- Submit your `rmd` **and** `html` files to the appropriate Canvas submission forms in this week's module. 
+
+***
+
+# A reminder to "FAIL FAST"
+
+Remember learning about "failing fast"?  If not, go back and re-watch the videos because failing fast is **1 billion times more important when working with `.rmd` files!**
+
+Any time you make a change (EVEN A MINOR CHANGE), re-compile/knit the document just to be sure that it **can** knit.  If you do too much work between knittings and you encounter a compiling issue... well, good luck with that!
+
+***
+
+# RMarkdown Basics
+
+[RMarkdown](http://rmarkdown.rstudio.com/) at its core is a combination of [`R`](https://cran.r-project.org/) and [Markdown](https://daringfireball.net/projects/markdown/) used to generate reproducible reports for data analyses.
+
+Markdown and `R` are mixed together in a `.rmd` file, which can then be rendered into a number of formats including `.html`, `.pdf`, and `.docx`. There will be a strong preference for `.html` in this course. 
+
+Have a look at this `.rmd` file to see how this document was generated! It should be read alongside the rendered `.html` to best understand how everything works. You can also modify the `.rmd` file and re-knit along the way to see what effects your modifications have.
+
+Formatting text is easy. **This is bold.** *This is italics.* `This text appears as monospaced.`  
+
+# Header 1
+## Header 2
+### Header 3
+
+- Unordered list element 1.
+- Unordered list element 2.
+- Unordered list element 3.
+    - Sublist
+    - Sublist
+        - Sub-sublist
+
+1. Ordered list element 1.
+1. Ordered list element 2.
+1. Ordered list element 3.
+
+***
+
+# YAML basics
+
+"**Y**AML **A**in't **M**arkup **L**anguage"!  Instead, the YAML contains metadata that can be used to instruct R Studio on how to process the R Markdown document when you knit it.
+
+In the rendered html document turn your attention to to the table of contents, click around a bit, scroll up and down, then come back to this [YAML basics] section.
+
+You'll notice that the table of contents only shows the level-one headers (the headers starting with a single hashtag `#`) unless you click on it.  If there are sub-headings, they are revealed.  Also notice that if you click on a particular section header, the document animates a smooth scroll to that section.
+
+Now, please go to the top of the .Rmd file. and look at the YAML.  **FIRST** be sure to insert your name in the space provided!!!  Next, see what happens if you change `collapsed: true` to `collapsed: false` and change `smooth_scroll: true` to `smooth_scroll: false`.
+
+Now the table of contents should not be collapsed, and when you click on a section header in the table of contents your documents *leaps* directly to that section, with no smooth scrolling. 
+
+Leave both `collapsed` and `smooth_scroll` as `false`.
+
+***
+
+# Packages
+
+Packages are key to using `R`. The community generated packages are a large part of `R`'s success, and it is extremely rare to perform an analysis without using at least some packages. Once installed, packages must be loaded before they are used.
+
+## Install necessary packages
+
+```{r, echo=T}
+# You only need to run the install.packages() commands once. 
+# Then you can comment them out by adding `#` at the beginning of each line
+
+# install.packages("rmarkdown", repos="http://cran.rstudio.com/")
+# install.packages("yaml", repos="http://cran.rstudio.com/")
+```
+
+Note that `rmarkdown` is actually a package in `R`! If `R` never prompts you to install `rmarkdown` and its associated packages when first creating an RMarkdown document, use the above command to install them manually.
+
+***
+
+# `R` Code Chunks
+
+So far we have only used Markdown to create html. This is useful by itself, but the real power of RMarkdown comes when we add `R`. There are two ways we can do this. We can use `R` code chunks, or run `R` inline.
+
+The following is an example of an `R` code chunk.  
+
+```{r}
+# 3 random samples
+sample(1:10, 5, replace = TRUE)
+sample(1:10, 5, replace = TRUE)
+sample(1:10, 5, replace = TRUE)
+```
+
+The function `set.seed()` fixes the way in which `R` produces random variables, so by setting the seed, any randomness will be identical at every run.
+
+```{r}
+# 3 random samples with the same seed
+set.seed(147)
+sample(1:10, 5, replace = TRUE)
+set.seed(147)
+sample(1:10, 5, replace = TRUE)
+set.seed(147)
+sample(1:10, 5, replace = TRUE)
+```
+
+Here is another `R` code chunk. **Please change 147 to the last 4 digits of your SID**
+
+```{r example_chunk_name}
+# generate random normals
+set.seed(7863) # Please change 147 to the last 4 digits of your SID
+x <- rnorm(10) # use <- for assignment instead of =
+x
+```
+
+There is a lot going on in each of the above chunks.  In the `.rmd` file, notice the syntax that creates and ends the chunk. Also note that `example_chunk` is the chunk name. Everything between the start and end syntax must be valid `R` code. **Chunk names are not necessary**, but can become useful as your documents grow in size.
+
+You can create an `R` code chunk quickly by pressing `Ctrl+Alt+i` (`Ctrl+Option+i` on a Mac).  In the below second level header (`## FIRSTNAME's own code chunks below`), change `FIRSTNAME` to your name, then create a new code chunk beneath it with the code to find and print the average of `x` from the above code chunk.  Create a second code chunk beneath it and simply print `"second code chunk, courtesy of FIRSTNAME"`.
+
+***
+
+## Chirag's own code chunks below
+
+Write your code chunks between the lines below.
+
+-------------------
+```{r}
+mean(x)
+```
+
+```{r}
+"Second code chunk, courtesy of Chirag"
+```
+
+
+-------------------
+
+When you are done, knit the document and see the result.
+
+## The `setup` code chunk
+
+Next, in the `.rmd` just beneath the YAML top matter, you will notice an `R` code chunk named `setup`.  This chunk IS optional, but it allows you to set the values of knitr parameters for the entire document.  
+
+In the `setup` code chunk at the top of the `.rmd` file, change `echo = TRUE` to `echo = FALSE`, re-knit the document, and note the differences.  You shouldn't see any more actual code, but the results of that code are still being printed out.
+
+Now change the `echo` back to `TRUE`, and then change the `eval = TRUE` to `eval = FALSE`.  Re-knit, and notice that the code is being shown, but the code is not being executed, so no results are printed.
+
+Please **return** both `echo` and `eval` back to `TRUE`.
+
+## Chunk Options
+
+There are many [chunk options](http://yihui.name/knitr/options/). Above, two options were introduced: `eval` and `echo`, how they are frequently used, and how to change them **globally**.  Next, you will see how to change them **locally** for individual chunks.
+
+```{r not_run, eval = FALSE}
+?log
+x
+```
+
+Using `eval = FALSE` the above chunk displays the code, but it is not run. The `?` code pulls up documentation of a function. The `x` code prints all values inside the vector x. With `eval = FALSE` (or simply `eval = F`), there is no output generated.
+
+```{r not_displayed, echo = FALSE}
+print("Hello World!")
+```
+
+Above, we see output, but no code! This is done using `echo = FALSE` (or simply, `echo=F`), which is often useful.
+
+One final useful option is `error`.  If any code chunks have errors in them, the entire `.rmd` file will not compile/export!!!  To avoid this problem, add `error = TRUE`, allowing you to have an occasional error here and there.
+
+```{r allow_error, echo = TRUE, error = TRUE}
+# No variable `y` has been created
+# so the below code should produce
+# an error.
+print(y)
+```
+
+```{r allow_error2, echo = TRUE, error = TRUE}
+# The below code is missing a closing parenthesis
+print("Hello World!")
+```
+
+## Inline `R`
+
+`R` can also be ran in the middle of exposition. For example, the mean of the data we generated is: `r mean(x)`.
+
+***
+
+# Adding Math with `LaTeX`
+
+Another benefit of RMarkdown is the ability to add [Latex](https://www.latex-project.org/about/) for mathematics typesetting. Like `R` code, there are two ways we can include Latex; displaystyle and inline.
+
+Note that use of `LaTeX` is somewhat dependent on the resulting file format. For example, it cannot be used at all with `.docx`. To use it with `.pdf` you must have LaTeX installed on your machine.
+
+With `.html` the `LaTeX` is not actually rendered during knitting, but actually rendered in your browser using [MathJax](https://www.mathjax.org/).
+
+## Displaystyle `LaTeX`
+
+Displaystyle is used for larger equations which appear centered on their own line.
+
+$$
+s = \sqrt{\frac{1}{n - 1}\sum_{i=1}^{n}(x - \bar{x})^2}
+$$
+
+## Inline LaTex
+
+We could mix LaTeX commands in the middle of exposition, for example: $\alpha = 2$ is written in LaTeX. 
+
+**We can actually mix `R` with Latex as well!** For example: $\bar{x} = `r mean(x)`$.
+
+<br>
+<br>
+
+***
+***
+
+# Review
+
+***
+
+## Subsetting vectors
+
+Recall that above we generated 10 random values from the normal distribution using `rnorm`, assigned the values into a vector `x`, then printed the values in vector `x`.
+
+
+### **Question 1** 
+
+Look at the output of the following code, what happens when you select with a negative index?
+
+```{r}
+x
+x[2]
+x[-2]
+```
+
+**ANSWER**: When you select with a negative index, it removes the index chosen and prints with the rest of x.
+
+***
+
+## Calculate summary statistics
+
+Summary statistics can be calculated from the data. Here we set the option `collapse=T` for the code chunk, so that R Markdown will try to collapse all the source and output blocks from one code chunk into a single block.
+
+```{r, collapse=T}
+mean(x)
+median(x)
+
+var(x) # sample variance
+
+n <- length(x)
+sum((x-mean(x))^2)/n # population variance
+mean(x^2)-(mean(x))^2 # population variance
+var(x)*(n-1)/n # population variance
+
+
+summary(x)
+```
+
+
+
+### **Question 2**
+
+Change `collapse=T` to `collapse=F` and re-knit. What happens? 
+
+**ANSWER**: Changing collapse to F doesn't allow R markdown to collapse all the source and output blocks from one code chunk into a single block.
+
+Please **return** `collapse=F` back to `collapse=T`.
+
+
+
+### **Question 3** 
+
+Complete the following code to print out the maximum value and the minimum value in `x`.
+
+**ANSWER**:
+
+```{r}
+min(x)
+max(x)
+```
+
+*** 
+
+
+### **Question 4** 
+
+The `var()` function calculates the sample variance. 
+$$ s^2 = \frac{1}{n-1}\sum_{i=1}^{n}(x - \bar{x})^2$$
+The `sd()` function calculates the sample standard deviation. 
+
+$$ s = \sqrt{s^2} = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n}(x - \bar{x})^2}$$
+
+Without using the `sd` function, calculate the sample standard deviation of `x`.  Your answer should be `r sd(x)`
+
+**ANSWER**:
+
+```{r, collapse=T}
+sqrt(sum((x-mean(x))^2/(length(x)-1)))
+```
+
+
+*** 
+
+### **Question 5** 
+
+Recreate the table given in the example of [Section 16.9](https://rc2e.com/rmarkdown#recipe-static-table) of the <u>R Cookbook</u>.
+
+**ANSWER**:
+
+| Stooge | Year | Hair?           |
+|--------|------|-----------------|
+| Moe    | 1887 | Yes             |
+| Larry  | 1902 | Yes             |
+| Curly  | 1903 | No (ironically) |
+
+| Stooge | Year | Hair? |
+|--------|------|-----------------|
+| Moe | 1887 | Yes |
+| Larry | 1902 | Yes |
+| Curly | 1903 | No (ironically) |
+
+|Left   |Right | Center  | Default |
+|:------|-----:|:-------:|---------|
+| 12345 |12345 | 12345   | 12345   |
+| text  | text | text    | text    |
+| 12    | 12   | 12      | 12      |
+
+
+
+
+
+
+***
+
+
+<br>
+<br>
+<br>
+<br>
+<p style="font-size:30px;color:#003DA5">
+<b>Congratulations!</b>  You've completed the practice exercise.  Please be sure to knit the final document and submit **BOTH** the `.Rmd` and `.html` files to Canvas.
+</p>

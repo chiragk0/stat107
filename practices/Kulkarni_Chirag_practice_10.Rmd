@@ -1,0 +1,134 @@
+---
+title: 'STAT 147 | Practice Exercises'
+subtitle: "Writing Functions"
+author: "Kulkarni, Chirag (862132127)"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    number_sections: false
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Montey Carlo:  Estimating $\pi$
+
+### TASK 2
+
+```{r}
+#Define the total number of uniform (x,y) points to simulate within the square
+total_points <- 500
+
+#initialize the number of circle points observed to be zero
+circle_pts <- 0
+
+#define the lowest possible coordinate value
+lo = 1/2
+#define the highest possible coordinate value
+#equals abs(lo) since we are centered at zero
+hi = abs(lo)
+
+#------------------------------------------
+#Loop enough times to generate 'total_points'
+for(i in 1: total_points){
+  #generate X and Y in one line
+  point <- runif(2, min = lo, max = hi)
+  distance <- sqrt(sum(point^2))
+  
+  #if distance <= 1/2, increment circle points
+  if(distance <= 0.5) circle_pts <- circle_pts + 1
+}
+
+#------------------------------------------
+#calculate pi = 4*(circle_points/square points)
+my_pi <- 4 * circle_pts / total_points
+
+#print to check
+my_pi
+```
+
+### TASK 3
+
+```{r}
+calc_dist <- function(lo,hi){
+  
+  #generate a bivariate point (x,y)
+  point <- runif(2, min = lo, max = hi)
+
+  #calculate distance
+  distance <- sqrt(sum(point^2))
+
+  #print to check
+  return(distance) 
+}
+
+#Check that the function still works
+calc_dist(lo = -0.5, hi = abs(lo))
+```
+
+```{r}
+#Define the total number of uniform (x,y) points to simulate within the square
+total_points <- 500
+
+#initialize the number of circle points observed to be zero
+circle_pts <- 0
+#------------------------------------------
+#Loop enough times to generate 'total_points'
+for(i in 1: total_points){
+  
+  #if distance <= 1/2, increment circle points
+  if(distance <= 0.5) circle_pts <- circle_pts + 1
+}
+
+#------------------------------------------
+#calculate pi = 4*(circle_points/square points)
+my_pi <- 4 * circle_pts / total_points
+
+#print to check
+my_pi
+```
+
+### TASK 4
+
+```{r}
+plus_one <- function(num_plus_one){
+  num_plus_one + 1
+}
+plus_one(99)
+```
+
+```{r}
+#Define the total number of uniform (x,y) points to simulate within the square
+total_points <- 500
+
+#initialize the number of circle points observed to be zero
+circle_pts <- 0
+#------------------------------------------
+
+plus_one <- function(num_plus_one){
+  num_plus_one + 1
+}
+plus_one(99)
+
+#------------------------------------------
+#calculate pi = 4*(circle_points/square points)
+my_pi <- 4 * circle_pts / total_points
+
+#print to check
+my_pi
+```
+
+<br>
+<br>
+<br>
+<br>
+<p style="font-size:30px;color:#003DA5">
+<b>Congratulations!</b>  You've completed the practice exercise.  Please be sure to submit your `.Rmd` and `.html` files to Canvas.
+</p>
+
+
