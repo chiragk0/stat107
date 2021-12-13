@@ -1,0 +1,345 @@
+---
+title: "Lab 10"
+author: "Chirag Kulkarni"
+date: "3/9/2021"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 4
+    number_sections: false
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+Write your own bisection method function which takes in as input five arguments: FUN which is the function to be analyzed, lo which is the lower bound of the zero crossing, hi which is the upper bound of the zero cross, tol which is the tolerated distance between lo and hi for the loop to terminate, and max_itr which is the maximum number of iterations allowed before termination with an error.
+```{r}
+#pick a name for the function
+my_bisect <-
+
+  #use the 'function()' keyword to assign the variable a function definition
+  function(FUN, lo = -100, hi = 100, tol = 1e-2, max_itr = 1e3){
+    f <- FUN
+
+    #lo <- 0
+    #hi <- 15
+    # Define the iterator
+    itr <- 0
+    # calculate the difference
+    delta <- abs(hi - lo)
+    # Begin the while loop
+    # Define the tolerance (0.01) and the max.itr (10^5)
+    repeat{
+        #Calculate the midpoint of `a` and `b`
+        mid <- (lo + hi)/2
+        if(f(mid) > 0){
+            # If f(mid) > 0, then we know the solution 
+            # for `x`` such that f(x) = 0 lies between
+            # `a` and `mid`, so change `b` to `mid`
+            hi <- mid
+        } else {
+            # Otherwise, change `a` to `mid`
+            lo <- mid
+        }
+        # Calculate the difference of the upper
+        # and lower bound to check in the while
+        # loop condition
+        delta <- abs(hi - lo)
+        itr <- itr + 1
+        if(itr > 10^5){
+            cat("Error:  Maximum number of iterations reached")
+            break
+        } else  if (delta > max_itr) {
+            break
+        }
+    }
+    return(mid)
+  }
+my_fun <- function(x) 1/(1+exp(-(x-17/3))) - 1/2
+#call the function to check that it works
+#you can pass an 'anonymous' function to the 'FUN' argument, as below
+#or assign the numeric function to a variable, and pass it to the 'FUN' argument after
+my_bisect(FUN = my_fun, lo = 0, hi = 15, tol = 1)
+my_bisect(FUN = my_fun, lo = 0, hi = 15, tol = 1, max_itr = 2)
+```
+
+
+## Question 2
+Refer to the first question. Try creating a new, monotonic (strictly increasing or decreasing) function and pass it to the FUN argument of the my_bisect() function! A straight line satisfies this criteria.
+```{r}
+#pick a name for the function
+my_bisect <-
+
+  #use the 'function()' keyword to assign the variable a function definition
+  function(FUN, lo = -100, hi = 100, tol = 1e-2, max_itr = 1e3){
+    f <- FUN
+
+    #lo <- 0
+    #hi <- 15
+    # Define the iterator
+    itr <- 0
+    # calculate the difference
+    delta <- abs(hi - lo)
+    # Begin the while loop
+    # Define the tolerance (0.01) and the max.itr (10^5)
+    repeat{
+        #Calculate the midpoint of `a` and `b`
+        mid <- (lo + hi)/2
+        if(f(mid) > 0){
+            # If f(mid) > 0, then we know the solution 
+            # for `x`` such that f(x) = 0 lies between
+            # `a` and `mid`, so change `b` to `mid`
+            hi <- mid
+        } else {
+            # Otherwise, change `a` to `mid`
+            lo <- mid
+        }
+        # Calculate the difference of the upper
+        # and lower bound to check in the while
+        # loop condition
+        delta <- abs(hi - lo)
+        itr <- itr + 1
+        if(itr > 10^5){
+            cat("Error:  Maximum number of iterations reached")
+            break
+        } else  if (delta > max_itr) {
+            break
+        }
+    }
+    return(mid)
+  }
+my_fun <- function(x) 1/(1+exp(-(x-17/3))) - 1/2
+#call the function to check that it works
+#you can pass an 'anonymous' function to the 'FUN' argument, as below
+#or assign the numeric function to a variable, and pass it to the 'FUN' argument after
+my_bisect(FUN = my_fun, lo = 0, hi = 15, tol = 1)
+my_bisect(FUN = my_fun, lo = 0, hi = 15, tol = 1, max_itr = 2)
+```
+
+
+## Question 3
+Refer to the Monty Carlo approximation of π from this week’s practice exercise. We will do the same thing, except this time we will increment the sample size n until we finally get an approximation of π such that, when we round to 2 digits, the estimate equals 3.14.
+
+We will also use the plus_one() and calc_dist() function from this week’s practice exercise.
+```{r}
+              #PART 1
+calc_dist <- function (radius = 0.5) {
+  # Assign variables
+  lo = -radius
+  hi = radius
+  # Generate a bivariate point (x,y)
+  point <- runif(2, min = lo, max = hi)
+  # Calculate distance
+  distance <- sqrt(sum(point^2))
+  # RETURN the final value
+  return(distance)
+}
+plus_one <- function(itr){
+  # Add one to the input
+  return(itr + 1)
+}
+
+            #PART 2
+total_points <- 500
+circle_pts <- 0
+for(i in 1:total_points){
+  distance <- calc_dist(radius = 0.5)
+  if(distance <= 0.5) circle_pts <- plus_one(circle_pts)
+}
+my_pi <- 4 * circle_pts / total_points
+my_pi
+
+           #PART 3
+set.seed(147)
+
+#initialize
+total_points <- 500
+circle_pts <- 0
+
+#use a repeat loop so that we enter the loop AT LEAST ONCE
+repeat{
+  #for each iteration through the loop:
+  #record the total number of simulated points
+  total_points <- plus_one(circle_pts)
+  #calculate the distance of the new point from the origin
+  distance <- calc_dist(radius = 0.5)
+  #if the distance is small enough, count it as being within the circle
+  if(distance <= 0.05) circle_pts <- plus_one(circle_pts)
+  #calculate the estimate of pi
+  my_pi <- 4 * circle_pts/total_points
+  #round the above estimate to 2 digits
+  round_pi <- round(my_pi, digits = 2)
+  #stop iterating if the rounded estimate satisfies our condition
+  if(round_pi == 3.14) break
+  #add a "safety" break to protect against infinite loops
+  if(total_points >= 10000) break
+}
+total_points
+```
+
+
+## Question 4
+Incorporate the above loop into a function named estimate_pi(). Do not include the set.seed(147). BE CAREFUL! You may be tempted to use total_points and circle_pts as arguments in the “formals” of the function, but this is not necessary. Simply write a function with no arguments which approximates π. Have it return a NAMED VECTOR, with the first entry equal to my_pi and the second equal to the number of iteration to get that pi approximation. For instance
+
+  c(my_pi 3.140956,  total_points209)
+
+
+Then, when you have it working successfully, call the following code and report the output.
+```{r}
+#vector <-
+  
+```
+
+
+## Question 5
+Confidence intervals: Follow along with the following exercise and answer the subquestions along the way.
+```{r}
+load("ames.RData")
+
+#set the gross liveable area as the population
+population <- ames$Gr.Liv.Area
+#draw a sample of 60 houses
+samp <- sample(population, 60)
+
+
+hist(samp)
+
+sample_mean <- mean(samp)
+
+se <- sd(samp)/sqrt(60)
+lower <- sample_mean - 1.96 * se
+upper <- sample_mean + 1.96 * se
+conf_intvl_95 <- c(lower, upper)
+conf_intvl_95
+
+mu <- mean(population)
+mu
+
+#define how many times you want to simulate drawing a sample 
+k <- 50
+#initialize storaze vectors for the associated mean and sd of each simulation
+samp_mean <- rep(NA, k)
+samp_sd <- rep(NA, k)
+#define the size of each individual sample
+n <- 60
+
+for(i in 1:k){
+  samp <- sample(population, n) # obtain a sample of size n = 60 from the population
+  samp_mean[i] <- mean(samp)    # save sample mean in ith element of samp_mean
+  samp_sd[i] <- sd(samp)        # save sample sd in ith element of samp_sd
+}
+
+lower_vector <- samp_mean - 1.96 * samp_sd / sqrt(n) 
+upper_vector <- samp_mean + 1.96 * samp_sd / sqrt(n)
+
+c(lower_vector[1], upper_vector[1])
+```
+
+
+## Question 6 
+Confidence interval visualization with a function
+```{r}
+plot_ci(lo = lower_vector, hi = upper_vector, m = mean(population))
+```
+
+## Question 7
+```{r}
+plot_ci <- 
+    function(lo, hi, m){
+      k <- 50
+    # Adjust the graph parameters    
+    par(# margin size (mar)
+        mar=c(2, 1, 1, 1),
+        # axis label locations (mgp)
+        mgp=c(2.7, 0.7, 0))
+    
+    # Bind the vectors into columns of a matrix
+    lo_hi <- cbind(-1*lo, hi)
+    
+    # Calculate the ranges
+    ranges <- rowSums(lo_hi)
+    
+    # Identify the largest range
+    ci.max <- max(ranges)
+    
+    # Specify the lowest and highest possible x values for the plot
+    xR <- m + ci.max*c(-1, 1)
+    # Specify the lowest and highest possible y values for the plot
+    yR <- c(0, 41*k/40)
+    
+    # Create a blank plot with the above specified dimentions 
+    plot(xR, yR, type='n', xlab='', ylab='', axes=FALSE)
+    # Add a vertical dashed line above the true mean
+    abline(v=m, lty=2, col='gray')
+    # Add a label for the true mean on the x-axis
+    axis(1, at=m, paste("mu = ",round(m,4)), cex.axis=1.15)
+    #axis(2)
+    # plot all k intervals
+    for(i in 1:k){
+        # Calculate the midpoint of the interval
+        midpoint_i <- x <- mean(c(hi[i],lo[i]))
+        # Isolate the conf interval for the ith sample
+        ci <- c(lo[i],hi[i])
+        
+        # ONLY IF the confidence interval DOES NOT contain the 
+        # true mean within it, add a red line
+        if(!contains(lo[i],hi[i],m)){
+            
+            # Add a red circle around the midpoint of the C.I.
+            # #F05133 is the color hex code for the shade of red I like
+            points(midpoint_i, i, cex=1.4, col="red")
+            
+            # Add a think red line accross the interval
+            # #F05133 is the color hex code for the shade of red I like
+            lines(ci, rep(i, 2), col="#F05133", lwd=5)
+        }
+        
+        # Always add a black interval for every C.I.
+        # Start with a solid black dot
+        points(x, i, pch=20, cex=1.2, col=1)
+        # End with a black line covering the region
+        lines(ci, rep(i, 2), col=1)
+    }
+}
+```
+
+
+## Question 8
+Type I error (α)
+```{r}
+#PART 1
+mu <- mean(population)
+sigma <- sd(population)
+std_err <- sigma/sqrt(60)
+
+x <- seq(mu - 3 * sigma, mu + 3 * sigma, 1)
+
+plot(x, dnorm(x, mean = mu, sd = std_err), type = "l", col = "blue")
+lines(x, dnorm(x, mean = mu, sd = sigma), type = "l")
+
+#PART 2
+alpha <- 0.05
+
+lower_crit_val <- qnorm(alpha/2, mean = mu, sd = std_err)
+upper_crit_val <- qnorm(alpha/2, mean = mu, sd = std_err, lower.tail = FALSE)
+lower_crit_val
+upper_crit_val
+
+#PART 3
+k <- 50
+test_record <- rep(NA, k)
+n <- 60
+
+for (i in 1:k){
+  samp <- sample(population, n)
+  test_result <- t.test(samp, mu = 1499.69)
+  test_record[i] <- test_result$p.value < 0.05
+}
+sum(test_record) / length(test_record)
+```
+

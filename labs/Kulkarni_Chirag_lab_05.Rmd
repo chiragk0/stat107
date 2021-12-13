@@ -1,0 +1,623 @@
+---
+title: 'STAT 147 | Lab'
+subtitle: 'Week 5 Lab - R Markdown and more coding grammar'
+author: "Chirag Kulkarni (10007863)"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    number_sections: false
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = FALSE)
+library(tidyverse)
+library(magrittr)
+library(openxlsx)
+```
+
+***
+
+## A reminder to "FAIL FAST"
+
+Remember the concept of "failing fast"?  If not, go back and re-watch the videos because failing fast is more important than ever when working with `.rmd` files!
+
+Any time you make a change (EVEN A MINOR CHANGE), re-compile/knit the document just to be sure that it **can** knit.  If you do too much work between knittings and you encounter a compiling issue... well, good luck with that!
+
+***
+
+# Diamonds
+
+Diamonds come in all shapes and sizes. The quality of a diamond is determined using a grading system to measure various characteristics such as carat weight, cut, color, clarity,  dimensions, total depth percentage, and more. A diamond's value (i.e., price) is usually dependent upon the rarity of one or more of these characteristics.    
+
+<br>
+
+
+## R Markdown
+
+Complete the following. Feel free to use the [R Markdown cheat sheet](https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf).
+
+1. Google the following diamond characteristics known as *The 4Cs*: carat, cut, color, clarity.
+<br>
+\ \ \ \ (a) Using rmarkdown syntax, create an unordered list of the four characteristics.  
+\ \ \ \ (b) Using rmarkdown syntax, create a sub-item for each of the unordered items from (a) which provides a brief description of what the characteristic measures.   
+\ \ \ \ (c) Using rmarkdown syntax, create a second sub-item for each of the characteristics to identify the scale used for measuring that characteristic.    
+\ \ \ \ (d) Using rmarkdown syntax, add a quote about diamonds in a `block-quote`. You can either make up your own quote or google one.    
+\ \ \ \ (e) Knit the .Rmd document to html and check if it compiled correctly.
+
+<br>
+
+**ANSWER**:
+
+\ \ (a)
+
+* Carat
+
+* Cut
+
+* Color
+
+* Clarity
+
+\ \ (b)
+
+* Carat
+
+  * a unit of weight for precious stones and pearls, now equivalent to 200 milligrams
+  
+  
+* Cut
+
+  * how well a diamond is cut and polished, including how well-proportioned the stone
+is, its depth and symmetry
+
+
+* Color
+
+  * highest quality diamonds are totally colorless, whereas lower quality diamonds can often have a slight yellow tint
+  
+  
+* Clarity
+
+  * the absence of inclusions and blemishes
+
+\ \ (c)
+
+* Carat
+
+  * a unit of weight for precious stones and pearls, now equivalent to 200 milligrams
+  
+  * 1 ct = 200 mg
+  
+* Cut
+
+  * how well a diamond is cut and polished, including how well-proportioned the stone
+is, its depth and symmetry
+
+  * Poor to Excellent cut range
+
+* Color
+
+  * highest quality diamonds are totally colorless, whereas lower quality diamonds can often have a slight yellow tint
+  
+  * D to Z color range
+  
+  
+* Clarity
+
+  * the absence of inclusions and blemishes
+  
+  * Included to Flawless
+  
+\ \ (d)
+
+> "All my diamonds come in yellow like a Funyun"
+    -Young Thug
+
+***
+
+Let's read in some diamond data.
+
+```{r}
+#read in the diamond data
+diamonds <- read.xlsx("diamonds.xlsx", sheet = "Data")
+#print
+diamonds <- tibble(diamonds)
+diamonds
+```
+
+****
+
+## The `select()` function
+
+Recall: The `select()` function selects variables in a data frame.
+
+As we have seen in coding, there are multiple approaches for achieving the same result. Let's get some more practice with the `select()` function, applying it in a variety of ways.
+
+<br>
+
+Select the 4C's **and** price from the `diamonds` data using the specified approaches below.
+<br>
+\ \ \ \ (a) Use `select()` with the column numbers.  
+\ \ \ \ (b) Use `select()` with the column names directly putting the 4C's in alphabetical order.  
+\ \ \ \ (c) Use `select()` with the helper function `starts_with()`.  
+\ \ \ \ (d) Use `select()` with the negation operator `!`.  
+\ \ \ \ (e) Use `select()` to arrange the columns as: price, the 4C's, remaining variables. Use helper functions as appropriate. **Then**, using the pipe operator `%>%`, drop the remaining variables using the *minus sign* `-` so only price and the 4C's are left. 
+
+<br>
+
+```{r}
+#(a)
+#uses select with the column numbers
+select(diamonds, 1:4)
+#(b)
+#uses select with column names putting the 4cs in order
+  select(diamonds, 
+         carat, cut, color, clarity)
+#(c)
+#uses select with the helper function "starts_with()"
+select(diamonds, starts_with("c"))
+#(d)
+#uses select with the negation operator
+select(diamonds[, !names(diamonds) %in% c("depth", "table", "price", "x", "y", "z")])
+#(e)
+#uses select to arrange the columns as: price, the 4C’s, remaining variables
+subset(diamonds, select=c(7,1:4,5,6,8:10))
+```
+
+
+<br>
+<br>
+
+## The `filter()` function
+
+Recall: The `filter()` function is used to subset a data frame, retaining all rows that satisfy the specified conditions. 
+
+Let's get some more practice with the `filter()` function.
+
+But first, let's make sure each diamond is evaluated completely (i.e., no missing values in any row or any column). We can use the `complete.cases()` function to return a logical vector indicating which cases are complete. Then use the `filter()` function to remove all incomplete cases.
+
+```{r}
+#check which rows have complete information (i.e no missing values)
+complete.cases(diamonds)
+#check for incomplete cases
+diamonds[!complete.cases(diamonds), ]
+```
+
+2. How many diamonds have incomplete information?
+
+**ANSWER**: No diamonds have incomplete information
+
+<br>
+
+Now, filter the diamonds to find:
+<br>
+\ \ \ \ (a) Diamonds that are larger than 3 carats.  
+\ \ \ \ (b) Diamonds with an *Internally Flawless* (IF) clarity rating.  
+\ \ \ \ (c) Diamonds that are classified as either *Premium* or *Ideal* cuts.  
+\ \ \ \ (d) Diamonds that are larger than 2 carats and classified as color *E*.    
+\ \ \ \ (e) *Fair* cut diamonds that are greater than 1.5 carats but less than 2 carats.  
+\ \ \ \ (f) Diamonds with *length* less than *width*. HINT: Did you examine the data file?  
+\ \ \ \ (g) Diamonds that cost more than the average price.  
+
+<br> 
+
+```{r}
+  #(a)
+#filters the diamonds that are larger than 3 carats
+filter(diamonds, diamonds$carat > 3)
+  #(b)
+#filters the diamonds that are (IF) clarity rating
+filter(diamonds, diamonds$clarity == "IF")
+  #(c)
+#filters the diamonds that are classified as either "Premium" or "Ideal" cuts
+filter(diamonds, diamonds$cut == "Premium" | diamonds$cut == "Ideal" )
+  #(d)
+#filters the diamonds that are larger than 2 carats and classified as color "E"
+filter(diamonds, diamonds$carat > 2 & diamonds$color == "E" )
+  #(e)
+#filters the diamonds that are Fair cut diamonds that are greater than 1.5 carats but less than 2 carats.
+filter(diamonds, diamonds$cut == "Fair" & diamonds$carat > 1.5 & diamonds$carat < 2)
+  #(f)
+#filters the diamonds that have less length than width
+filter(diamonds, diamonds$x < diamonds$y)
+  #(g)
+#filters the diamonds that cost more than the average price
+filter(diamonds, diamonds$price > mean(diamonds$price))
+```
+
+<br>
+
+
+3. Use the table below to record the number of diamonds that resulted from each filter above.
+<br>
+
+**ANSWER**:
+
+|Filter|  Number of Diamonds    |
+|:----:|:-----------------------|
+| (a)  | 32 |
+| (b)  | 1790 |
+| (c)  | 35342 |
+| (d)  | 78 |
+| (e)  | 108 |
+| (f)  | 30500 |
+| (g)  | 19657 |
+
+
+<br>
+<br>
+
+## The `arrange()` function
+
+Recall: The `arrange()` function changes the order of the rows of a data frame according to the values of selected columns. It is similar to the *sort* function in programs like Excel.
+
+Let's explore the `arrange()` function a little more.
+
+We'll start by arranging the diamonds by **carat**.
+
+```{r}
+#arranges the diamonds by carat
+arrange(diamonds, diamonds$carat)
+
+```
+
+Notice the weights (a quantitative variable) are in ascending (smallest to largest) order by default. To switch to descending (largest to smallest) order, use the argument desc() within the `arrange` function. 
+
+```{r}
+#arranges diamonds by descending carat 
+arrange(diamonds, desc(diamonds$carat))
+
+```
+
+4. What are the minimum and maximum carat weights?
+
+**ANSWER**: The maximum carat weight is 5.01 carats and the minimum carat weight is 2.05.
+
+<br>
+
+Next, arrange the diamonds by **color**.
+
+```{r}
+#arranges diamonds by color 
+arrange(diamonds, diamonds$color)
+
+```
+
+Notice the color (a qualitative variable) has been ordered alphabetically. From your google search at the beginning of this lab, you learned that color is rated from D (white) to Z (yellow). Thus, when arranging by diamond color, alphabetical ordering is equivalent to ordering from best to worst. 
+
+Consider clarity (also a qualitative variable). The `arrange()` function will order the clarity ratings alphabetically. However, this won't correspond to the true ordering of the clarity ratings.
+
+Note: From a quick google search, the full list of clarity ratings for diamonds (in order from best to worst) are *FL, IF, VVS1, VVS2, VS1, VS2, SI1, SI2, I1, I2, I3*.
+
+We can define the ranking for clarity as seen below:
+
+```{r}
+#checks which clarity ratings are present in the diamond dataset
+clarity_ratings <- unique(diamonds$clarity)
+clarity_ratings
+
+#defines rank of clarity ratings from best to worst
+diamonds$clarity <- factor(diamonds$clarity,
+                           levels = c("FL", "IF", "VVS1", "VVS2",
+                                      "VS1", "VS2", "SI1", "SI2",
+                                      "I1", "I2", "I3")
+)
+#uses arrange() to order the clarity variable from best to worst
+diamonds %>%
+  arrange(clarity)
+#uses arrange() to order the clarity variable from worst to best
+diamonds %>%
+  arrange(desc(clarity))
+```
+
+<br>
+
+Next, let's explore arranging by more than one variable. Arrange the diamonds by **carat** and **color**. But first, filter to reduce the data set to contain only diamonds that are classified as *Very Good* cut.
+
+```{r}
+#arranges diamonds by carat and clarity
+diamonds %>%
+  filter(cut == "Very Good") %>%
+  arrange(carat, color)
+
+```
+
+5. What is the price of the diamond in the first row when arranging by carat and color?
+
+**ANSWER**: 367
+
+<br>
+
+Now arrange the diamonds by **color** and **carat**. Again, filter first to reduce the data set to contain only diamonds that are classified as *Very Good* cut.
+
+```{r}
+#arranges diamonds by clarity and carat
+diamonds %>%
+  filter(cut == "Very Good") %>%
+  arrange(color, clarity)
+
+```
+
+6. What is the price of the diamond in the first row when arranging by color and carat?
+
+**ANSWER**: 1331
+
+
+<br>
+Let’s get some more practice with the arrange() function.
+
+Arrange the diamonds to find the answers for the following questions. Use other verbs of data manipulation as necessary.
+<br>
+\ \ \ \ (a) What is the carat weight of the most expensive diamond?  
+\ \ \ \ (b) What is the color of the diamond with the smallest depth percentage?   
+\ \ \ \ (c) What is the cut rating for the widest diamond? HINT: Did you examine the data file?    
+\ \ \ \ (d) What is the minimum price of a diamond that has clarity VS1?  
+
+<br>
+
+```{r}
+
+  #(a)
+#finds the carat weight of the most expensive diamond
+arrange(diamonds, desc(diamonds$price))
+  #(b)
+#finds the color of the diamond with the smallest depth percentage
+arrange(diamonds, -desc(diamonds$depth))
+  #(c)
+#finds the cut rating for the widest diamond
+arrange(diamonds, desc(diamonds$y))
+  #(d)
+#finds the minimum price of a diamond that has clarity VS1?
+diamonds %>%
+  filter(clarity == "VS1") %>%
+  arrange(-desc(price))
+
+
+```
+
+<br>
+
+7. Use the table below to record your answers for each part above.
+
+**ANSWER**:
+
+|Arrange|  Answers               |
+|:-----:|:-----------------------|
+| (a)   | 18823 |
+| (b)   | G |
+| (c)   | Premium |
+| (d)   | 327 |
+
+<br>
+<br>
+
+## The `mutate()` function
+
+Recall: The `mutate()` function adds new variables and preserves existing ones while the `transmute()`function adds new variables and drops existing ones.
+
+Let's get more practice with the `mutate()` function.
+
+One way to compare the prices of different size diamonds would be to consider the price per carat. We'll create a price per carat column called `price_pr_crt`, make it the leading column, and then sort the `price_pr_crt` column to find the best *deal* on a diamond.
+
+```{r}
+diamonds %>%
+  #create a column of price/carat values for the diamonds
+  mutate(price_pr_crt = price/carat) %>%
+  #make price_pr_crt the leading column followed by everything else
+  select(price_pr_crt , everything()) %>%
+  #sort the price_pr_crt in ascending order
+  arrange(price_pr_crt)
+
+```
+
+8. What is the minimum price per carat?
+
+**ANSWER**: 1051.163
+
+<br>
+
+
+9. The total depth percentage (`depth`) of a diamond is calculated as the depth divided by the average of the length and width. Or in other words,  $$\frac{2 \times depth}{length+width}$$ Create a column named `check_depth` using the existing variables in the `diamonds` dataset (HINT: Did you examine the data file?) with an appropriate formula. Make `check_depth` the leading column, followed by `depth`, and then everything else. 
+
+
+```{r}
+#creates a column named check_depth using the existing variables in the diamonds dataset
+diamonds_new<-
+diamonds %>%
+  mutate(check_depth = (2*x)/(y+z))
+
+diamonds_new
+
+```
+
+<br>
+
+10. Repeat question 9 but this time keep only the new column `check_depth` followed by the leading column and drop everything else.
+
+```{r}
+#repeats question 9 but keeps the new columns followed by the leading column
+#and drop everything else
+diamonds_new[,c(11,1,2:10)]
+
+```
+
+
+<br>
+<br>
+
+## The `group_by()` and `summarise()` functions
+
+Recall: The `group_by()` and `summarise()` functions work together to summarize the observations *by group*. When called, `summarise()` will contain one column for each grouping variable and one column for each summary statistic specified.
+
+Let's get some more practice with the `summarise()` function.
+
+The cut of a diamond is one of the 4C's that heavily influences the price of a diamond. Let's find the average price for each cut of diamond.
+
+```{r}
+#finds the average price for each cut of diamond
+diamonds %>%
+  group_by(cut) %>%
+  summarise(avg_price = mean(price))
+```
+
+
+11. What is the average price for Premium cut diamonds?
+
+**ANSWER**: 4584.258	
+
+<br> 
+
+12. Find the average carat weight for each cut of diamond. What is the average carat weight for Ideal diamonds?
+
+```{r}
+
+#finds the average weight for each cut of diamond
+diamonds %>%
+  group_by(cut) %>%
+  summarise(avg_weight = mean(carat))
+
+```
+
+**ANSWER**: 0.7028370	
+
+<br>
+We can *summarize* more than one statistic for each group by adding additional arguments to the `summarise()` function.
+
+```{r}
+diamonds %>%
+  #group diamonds by cut
+  group_by(cut) %>%
+  #find average price and carat weight for cuts, as well as counts
+  summarise(avg_price = mean(price),
+            avg_carat = mean(carat),
+            n = n()
+            )
+
+```
+
+
+13. How many diamonds have a Fair cut rating?
+
+**ANSWER**: 1610
+
+<br>
+
+14. Find the average price of diamonds by cut and color, as well as their corresponding counts.
+
+
+```{r}
+
+diamonds %>%
+  #group diamonds by cut
+  group_by(cut, color) %>%
+  #find average cut and color for cuts, as well as counts
+  summarise(avg_price = mean(price),
+            n = n()
+            )
+
+
+#counts how many diamonds have "Fair" and color "D" ratings
+count(filter(diamonds, diamonds$cut == "Fair" & diamonds$color == "D"))
+```
+
+<br>
+
+15. Use the results from Question 14 to answer the following questions.
+<br>
+\ \ \ \ (a) How many groups are there?   
+\ \ \ \ (b) How many diamonds have Fair and color D ratings?  
+
+**ANSWER**: (a) 140, \ \ \ \ (b) 163 
+
+<br>
+<br>
+
+## Data Manipulation
+
+Us the verbs of data manipulation and the pipe operator `%>%` to complete the following data manipulation sequence:
+
+Starting with the diamonds dataset, rearrange the variable columns to be ordered with the 4C's first, followed by price, and then the dimensions (length, width, depth). Reduce the dataset to contain only color E diamonds that are bigger than 1 carat and have clarity SI1 or VS1. Do not include any diamonds that are rated as having a Fair cut.
+
+```{r}
+#uses the verbs of data manipulation and the pipe operator to complete the 
+#aforementioned data manipulation sequence.
+
+diamonds %>%
+  select(1,2,3,4,7,8,9,10, everything()) %>%
+  filter(color == "E", carat > 1, clarity == c("SI1", "VS1"), cut != "Fair")
+
+```
+
+16. Before proceeding further, how many diamonds are remaining in the dataset?
+
+**ANSWER**: 636
+
+<br>
+
+Continuing from where you left off, reduce the data set further by keeping only diamonds that have length greater than width. Calculate the price per carat for these remaining diamonds and find the minimum, median, maximum, and counts for each combination of cut and clarity.
+
+```{r}
+
+#continues from where I left off and finishes the data manipulation sequence
+#from the instructions mentioned above
+
+diamonds %>%
+  select(starts_with("c"), "price", "x", "y", "z") %>%
+  filter(color == "E", carat > 1, clarity == "SI1" | clarity == "VS1",
+         cut != "Fair", x > y) %>%
+  mutate(price_per_carat = (price / carat)) %>%
+  group_by(cut, clarity) %>%
+  summarise(min(price_per_carat), median(price_per_carat), max(price_per_carat), n())
+
+```
+
+
+17. Answer the following questions using the results of your data manipulation.
+<br>
+\ \ \ \ (a) What is the minimum price per carat for Premium VS1 diamonds?  
+\ \ \ \ (b) What is the mediam price per carat for Good SI1 diamonds?  
+\ \ \ \ (c) What is the cut and clarity for the largest maximum price per carat?  
+\ \ \ \ (d) How many diamonds are rated Very Good with VS1 clarity?  
+
+
+**ANSWER**: Use the table below to provide your answers for each part above.
+
+|  Q17  |  Answers               |
+|:-----:|:-----------------------|
+| (a)   |6504.808	 |
+| (b)   | 5362.000	|
+| (c)   | Ideal VS1 |
+| (d)   | 7 |
+
+
+<br>
+<br>
+
+## The `knitr::purl()` function
+
+> <u>**purl**</u>: (*noun*) To knit with a stitch made by putting the needle through the front of the stitch from right to left.
+
+While R Markdown is a great tool, sometimes it is desirable to extract only the R code from the R Markdown document and export it to a standalone R Script file.  The knitr package has a function to do that!  `purl()`.
+
+The `purl()` function got it's name from the purl stitch, which is a very easy stitch to unravel!
+
+18. Please read the ["Converting R Markdown to R script"](https://bookdown.org/yihui/rmarkdown-cookbook/purl.html) from the [R Markdown Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/).
+<br><br>
+Next, please read the documentation for the `purl()` function. 
+<br><br>
+
+?purl()
+
+***
+
+<br>
+<br>
+<br>
+<br>
+<p style="font-size:30px;color:#003DA5">
+<b>Congratulations!</b>  You've completed the lab.  Please be sure to submit your answers to Canvas. You will also need to submit your `.Rmd` and `.html` files to Canvas.
+</p>

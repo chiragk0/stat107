@@ -1,0 +1,477 @@
+---
+title: 'STAT 147 | Lab'
+subtitle: 'Week 7 - R Probabilities'
+author: "Chirag Kulkarni (862132127)"
+output:
+  html_document:
+    highlight: pygments
+    theme: cerulean
+    toc: true
+    toc_depth: 4
+    number_sections: false
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+mainfont: FiraSans
+---
+
+```{r setup, include=FALSE, echo = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(magrittr)
+library(knitr)
+```
+
+
+***
+# Instructions
+
+The goal of this lab is to become comfortable with random variables, their probabilities, and their simulation.
+
+Please download the file `Lastname_Firstname_Lab_07.Rmd`, change the file name to reflect your own name, and complete the lab using that file.
+
+## A reminder to "FAIL FAST"
+
+Any time you make a change (EVEN A MINOR CHANGE), re-compile/knit the document just to be sure that it **can** knit.
+
+***
+
+# Probability Distributions
+
+**RECALL:**
+
+  • For random variables, **probability density** = **probability mass function** = $P(X = x)$.  
+  
+  • For random variables, **survival function** =  $P(X > q) = 1 - P(X \leq q)$  and $P(X \geq a) = 1 - P(X < a)$  
+  
+  • For **discrete** random variables only, $P(X < q + 1) = P(X \leq q)$.  
+  
+  • For **continuous** random variables only, $P(X \leq q) = P(X < q)$ and $P(X \geq a) = P(X > a)$.  
+
+<br>
+
+**NOTE**:  One can  use the PDF/PMF, CDF and SDF (CDF with tail.prob = FALSE) functions in R to calculate probability density (mass) functions, cumulative distribution functions  [$P(X \leq x)$], and survival distribution functions [$P(X > x)$]. The quantile function can be used to generate percentiles.
+
+***
+
+## Question 1
+
+1. Suppose X is a continuous random variable that represents the life length (in months) of a battery. Also suppose X is **normally distributed** with a **mean** of **48** months and a **standard deviation** of **6** months.
+
+### Q1, Part (i)
+
+ \ \ \ \ (i) Find the probability that a battery selected at random will last between 36 and 60
+(**inclusively**)  months. 
+
+We want to use R to compute $P(36 \leq X \leq  60)$.
+
+NOTE: $P(36 \leq X \leq 60) = P(X \leq 60) - P(X < 36)$. 
+
+We write the following R code:
+
+```{r}
+# P(36 <= X <= 60)
+# Central Region = Big Left Tail - Small Left Tail
+#     = P(X <= 60) - P(X < 36)
+pnorm(60, mean = 48, sd = 6) - pnorm(36, mean = 48, sd = 6)
+```
+
+### Q1, Part (ii)
+
+ \ \ \ \  (ii) Find the probability that a battery selected at random will last more than 63 months. 
+
+```{r}
+# P(X > 63)
+## method 1
+pnorm(63, mean = 48, sd = 6,
+      lower.tail = FALSE)
+## method 2
+# P(X > 63) = 1 - P(X <= 63)
+1-pnorm(63, mean = 48, sd = 6)
+```
+
+
+### Q1, Part (iii)
+
+The lecture videos cover dxxx(), pxxx(), and rxxx().  However, the quantile/percentile function `qxxx()` was not discussed.  Please use the help documentation and google as needed to explore the function and it's meaning. 
+
+ \ \ \ \ (iii) Find the 90th percentile for the life length of the battery. i.e., Find x such that P (X ≤ x) = 0.90.
+
+```{r}
+#finds the 90th percentile for the life length of the battery
+qnorm(p = 0.90, mean = 60, sd = 6)
+```
+
+Thus, for a normal density function with a mean of 60 and a standard deviation of 6, the value of $x$ that gives 90% of the area under the curve to its left is `r qnorm(p = 0.90, mean = 60, sd = 6)`. In other words, 90% of these batteries will have a life length of `r qnorm(p = 0.90, mean = 60, sd = 6)` months or less.
+
+***
+
+
+## Question 2
+
+2. Suppose the probability that a person who regularly watches college football is female with a probability of **0.45**. **Twenty** college football watchers are selected at random.
+
+Unlike question 1, the distribution of the random variable is not directly specified. However, the distribution can be determined based on the setting.  
+
+**20** people are selected at random, i.e. **20 trials**. The outcome of each trial can be categorized as a "success" or a "failure". Each trial has a **"success" probability of 0.45**.  The random response is the number of successes out of the 20 independent trials.  Therefore, one can ascertain that the random variable follows a **$Binomial(n=20, p = 0.45)$** distribution.
+
+Now, please consider the wording in the following questions to determine the correct way to answer them:
+
+### Q2, Part (i)
+
+\ \ \ \ (i) What is the probability that **exactly** 9 are female?  
+
+```{r}
+# Exact probabilities are PMFs (Probability Mass Functions)
+# P(X = 9)
+dbinom(9, size = 20, prob = 0.45)
+
+# method 2
+# P(X = 9) = P (X <= 9) - P(X <= 8)
+pbinom(9, size = 20, prob = 0.45) - pbinom(8, size = 20, prob = 0.45)
+```
+
+### Q2, Part (ii)
+
+\ \ \ \ (ii) What is the probability that at **most** 11 are female?  
+
+```{r}
+# P(X <= 11)
+pbinom(11, size = 20, prob = 0.45)
+```
+
+### Q2, Part (iii)
+
+\ \ \ \ (iii) What is the probability that more than 10 are female? 
+
+```{r}
+# Method 1
+# P(X > 10)
+pbinom(10, size = 20, prob = 0.45, lower.tail = FALSE)
+
+# Method 2
+# P(X > 10) = 1 - P(X <= 10)
+1 - pbinom(10, size = 20, prob = 0.45)
+```
+
+### Q2, Part (iv)
+
+**NOW YOU TRY!!!**
+
+\ \ \ \ (iv) What is the probability that at least 9 are female?  
+
+```{r}
+# P(X >= 9) = 1 - P(X < 9)
+# = 1 - P(X <= 8)
+1 - pbinom(8, size = 20, prob = 0.45)
+```
+
+
+### Q2, Part (v)
+
+\ \ \ \ (v) What is the probability that between, and including, 8 and 12 are female?
+
+```{r}
+# P(8 <= X <= 12)
+# = P(X <= 12) - P(X < 8)
+# = P(X <= 12) - P(X <= 7)
+pbinom(12, size = 20, prob = 0.45) - pbinom(7, size = 20, prob = 0.45)
+```
+
+Let's get creative!  Let's calculate the individual exact probabilities, then add them up. Replace the `...` as necessary.
+
+**When you have made the correction, please change the `eval = F` to `eval = T` in the code chunk options.**
+
+```{r, eval=T}
+outcome_set <- 8:12
+# Print to check
+outcome_set
+
+# Calculate the exact probabilities
+exact_probs <- dbinom(outcome_set, size = 20, prob = 0.45)
+# Print to check
+names(exact_probs) <- c("P(X=8)", "P(X=9)", "P(X=10)", "P(X=11)", "P(X=12)")
+# PRINT TO CHECK
+exact_probs
+
+# Add them up
+central_interval <- sum(exact_probs)
+names(central_interval) <- "P(8 <= X <= 12)"
+# PRINT TO CHECK
+central_interval
+```
+
+***
+
+
+## Question 3
+
+3. Suppose X is a discrete random variable such that X ∼ Bin(x; n = 10, p = 0.50). Use R to generate the pdf and cdf of X.
+
+```{r}
+#creates a pdf and cdf of X such that X ∼ Bin(x; n = 10, p = 0.50)
+binom_distn <-
+  tibble(x = 0:10)
+binom_distn
+```
+
+### Q3, Part (i)
+
+\ \ \ \ (i) Let's use the mutate function to add a new column for the exact probabilities for each observation.  Please modify the following, replacing the `...` with the correct code.  
+
+**When you have made the correction, please change the `eval = F` to `eval = T` in the code chunk options.**
+
+```{r, eval = T}
+#adds a new column for the exact probabilities for each observation 
+binom_distn <-
+  binom_distn %>%
+    mutate(PMF = dbinom(x, size = 10, prob = 0.5))
+binom_distn
+```
+
+
+As a sanity check, let's confirm that the probabilities sum to 1.  Use the `summarise()` function to sum the `PMF` column.
+
+```{r}
+#confirms that the probabilities sum to 1
+binom_distn %>%
+  summarise(total_prob = sum(PMF))
+```
+
+### Q3, Part (ii)
+
+\ \ \ \ (ii) Next, let's use the mutate function to add a new column for the cumulative probabilities for each observation.  Please modify the following, replacing the `...` with the correct code.  
+
+**When you have made the correction, please change the `eval = F` to `eval = T` in the code chunk options.**
+
+```{r, eval = F}
+#adds a new column for the cumulative probabilities for each observation 
+binom_distn <-
+  binom_distn %>%
+   mutate(CDF = pbinom(x, size = 10, prob = 0.5))
+binom_distn
+```
+
+
+### Q3, Part (iii)
+
+\ \ \ \ (iii) Create a plot of x vs the pmf of x.
+
+```{r}
+#uses the plot function to create a plot of x vs PMF
+binom_distn %$%
+  plot(x, PMF,
+       main = "x vs P(X = x)",
+       col = "blue",
+       type = "o",
+       pch = 18,
+       cex = 1.5
+       )
+```
+
+### Q3, Part (iv)
+
+\ \ \ \ (iv) **Now you try!**   Create a plot of the cumulative distribution, i.e., `x` vs `P(X <= x)`.  Change the color of the plot to purple.
+
+```{r}
+binom_distn %$%
+  plot(x, binom_distn$CDF,
+       main = "x vs P(X <= x)",
+       col = "purple",
+       type = "o",
+       pch = 18,
+       cex = 1.5
+       )
+```
+
+***
+
+## Question 4
+
+4. Dylan believes that 30% of tablet pc owners prefer the *Microsoft Surface Pro*. To test his claim, he selects a random sample of 25 tablet pc owners. Let X = # of owners that selected the *Microsoft Surface Pro* as their preference. Use this information to complete the following using R.
+
+### Q4, Part (i)
+
+\ \ \ \ (i) What is the probability that **exactly 9** owners selected the *Microsoft Surface Pro*?
+
+```{r}
+# P(X = 9)
+# Use dbinom (x, size = sample size, prob = probability of success)
+exactly_9 <- dbinom(x = 9, size = 25, prob = 0.3)
+#print the answer 
+exactly_9
+```
+
+### Q4, Part (ii)
+
+\ \ \ \ (ii) What is the probability that **no more than 9** owners selected the *Microsoft Surface Pro*?
+
+```{r}
+# P(X <= 9)
+# Use pbinom (q, size = sample size, prob = probability of success)
+no_more_than_9 <- pbinom(q = 9, size = 25, prob = 0.3)
+#prints the answer
+no_more_than_9
+```
+
+### Q4, Part (iii)
+
+\ \ \ \ (iii) What is the probability that **9 or more** owners selected the *Microsoft Surface Pro*? 
+
+```{r}
+# P(X >= 9)
+# = P(X > 8)
+# 1 - P(X <= 8)
+# Use pbinom (q, size = sample size, prob = probability of success)
+nine_or_more <- pbinom(q=8, size=25, prob = 0.30,
+                       lower.tail = FALSE)
+#prints the answer
+nine_or_more
+```
+
+### Q4, Part (iv)
+
+\ \ \ \ (iv) What is the probability that between 9 and 12 owners, inclusively, selected the *Microsoft Surface Pro* as their preference?
+
+```{r}
+# P(9 <= X <= 12) = P(X <= 12) - P(X < 9) = P(X <= 12) - P(X <= 8)
+ge9_and_lel2 <- pbinom(12, size = 25, prob = 0.30) - pbinom(8, size = 25, prob = 0.30)
+#prints the answer
+ge9_and_lel2
+```
+
+### Q4, Part (v)
+
+\ \ \ \ (v)  What is the probability that less than 7 or more than 12 owners selected the *Microsoft Surface Pro*? Be sure to write your R commands and the results of each step in the space provided.
+
+```{r}
+# P(X < 7 OR X > 12)
+# method 1: Add two tails
+# P(X < 7 OR X > 12)
+# = P(X < 7) + P(X > 12)
+# = P(X <= 6) + P(X > 12)
+lt7_or_gt12 <-
+  pbinom(6, size = 25, prob = 0.30) + pbinom(12, size = 25, prob = 0.30, lower.tail = FALSE)
+#print the answer
+lt7_or_gt12
+
+# method 2: Remove central region
+# P(X < 7 OR X > 12)
+# = 1 - P(7 <= X <= 12)
+# = 1 - central region
+# = 1 - {P(X <= 12) - P(X <= 6)}
+central_region <- pbinom(12, size = 25, prob = 0.30) - pbinom(6, size = 25, prob = 0.30)
+1 - central_region
+```
+
+****
+
+## Question 5
+
+5. Microsoft claims that the Surface Pro 4 has a battery life that is **normally distributed** with a **mean** of 8 hours (when web browsing) and a **standard deviation** of 1.25 hours. Mark wants to buy a Surface Pro 4 for work. He goes to a local store and a salesperson selects a Surface Pro 4 at random for him. Mark takes the Surface Pro 4 to his office, fully charges the battery and then uses it until it runs out of power. Let X = the battery life of the Surface Pro 4.
+
+**NOTE:** The above question assumes $X \sim N(\mu,\sigma)$.  
+In `R`,  
+
+ use `dnorm(x,mean,sd)` to generate $P(X = x)$ = pdf of $X$  
+ use `pnorm(q,mean,sd)` to generate $P(X \leq x)$ = cdf of $X$  
+ use `pnorm(q,mean,sd,lower.tail = FALSE)` to generate $P(X > x)$ = 1 - cdf of $X$   
+
+
+### Q5, Part (i)
+
+\ \ \ \ (i) Find the probability that the battery life  is  less than 6.4 hours?
+
+```{r}
+# P(X < 6.4)
+# use pnorm(x,mean,sd)
+lower1 <- pnorm(6.4, mean = 8, sd = 1.25)
+# print the answer
+lower1
+```
+
+### Q5, Part (ii)
+
+\ \ \ \ (ii) Find the probability that the battery life  is  greater than 6.4 hours?
+
+```{r}
+# P(X > 6.4)
+# use pnorm(x, mu, sigma, lower = FALSE) to get upper tail
+upper1 <- pnorm(6.4, 8, 1.25, lower.tail = FALSE)
+#print the answer
+upper1
+```
+
+### Q5, Part (iii)
+
+\ \ \ \ (iii) Confirm that lower1 and upper1 are complements of one another (i.e. confirm that they sum to 1).
+
+```{r}
+#confirms that lower1 and upper1 are complements of one another
+sum(lower1, upper1)
+```
+
+
+### Q5, Part (iv)
+
+\ \ \ \ (iv) Find the probability that the battery life  is  between 6.5 and 8.5 hours.
+
+```{r}
+#finds the probability that the battery life is between 6.5 and 8.5 hours
+battery <-  pnorm(8.5, mean = 8, sd = 1.25)- pnorm(6.5,8,1.25)
+battery
+```
+
+
+
+***
+
+## Question 6
+
+6. Refer to question 5.  
+
+### Q6, Part (i)
+
+\ \ \ \ (i) Find the 75th percentile (quantile) for battery life. i.e., find x such that $P(X \leq x) = 0.75$.
+
+```{r}
+#use qnorm(quantile, mean, sd) to generate 95th percentile
+quantile75 <- qnorm(p = 0.75, mean = 8, sd = 1.25)
+#print the answer
+quantile75
+```
+
+### Q6, Part (ii)
+
+\ \ \ \ (ii) Find the 87th percentile (quantile). i.e., find x such that $P(X \leq x) = 0.87$.
+
+```{r}
+#use qnorm(quantile, mean, sd) to generate 87th percentile
+quantile87 <- qnorm(p = 0.87, mean = 8, sd = 1.25)
+#print the answer
+quantile87
+```
+
+### Q6, Part (iii)
+
+\ \ \ \ (iii) **ON YOUR OWN!!!**  Using what you know about complements and quantiles/percentiles, find $x$ such that $P(X > x) = 0.40$.
+
+```{r}
+#p(X > x) = 1 - p(X <= x)
+#use qnorm(quantile, mean, sd) to generate 40th percentile
+quantile40 <- 1- qnorm(p = 0.40, mean = 8, sd = 1.25)
+#print the answer
+quantile40
+
+```
+
+***
+
+
+<br>
+<br>
+<br>
+<br>
+<p style="font-size:30px;color:#003DA5">
+<b>Congratulations!</b>  You've completed the lab.  Please be sure to submit your answers to Canvas. You will also need to submit your `.Rmd` and `.html` files to Canvas.
+</p>

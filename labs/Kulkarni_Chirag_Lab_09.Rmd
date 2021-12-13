@@ -1,0 +1,535 @@
+---
+title: 'STAT 147 | Lab'
+subtitle: 'More Control flow | Loops, if, else, etc.'
+author: "Kulkarni, Chirag (862132127)"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    number_sections: false
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+---
+
+```{r setup, include=FALSE, echo = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(magrittr)
+```
+
+# Instructions
+
+The goal of this lab is to get additional practice with control flow in R. 
+
+Please download the file `Lastname_Firstname_Lab_09.Rmd`, change the file name to reflect your own name, and complete the lab using that file.
+
+You will also need to download the necessary data files `CHEM_PLANTS.dat` and `DOG_RACES.DAT`.
+
+***
+
+# Q1: Simple loop
+
+1.  Let’s try some for-loop calculations! Suppose we would like to calculate  $y = 0.5xe^{0.5x},$ for  $x = 1,3,5,7,9$
+
+Add your own comments to the below code.
+
+```{r}
+#prints out numbers from 1 to 9 with an increment of 2
+for(x in seq(from = 1, to = 9, by = 2)){
+  print(x)
+}
+```
+
+Add your own comments to the below code.
+
+```{r}
+#calculates y=0.5xe^0.5x with increments from values of 1 to 9 with increments of 2
+for(x in seq(from = 1, to = 9, by = 2)){
+  y <- x/2 * exp(x/2)
+  print(c(x,y))
+}
+```
+
+<br><br>
+
+****
+
+# Q2:  Filling data frames with simple for loops
+
+2. Complete the below code which puts the above output into an empty data frame. Add your own comments to describe what is happening in each line.
+
+```{r}
+#constructs a data frame and assigns it to "df"
+df <- data.frame(x = c(0,0,0,0,0),
+                 y = c(0,0,0,0,0))
+#sets a variable "itr" to 0, which serves as the counter
+itr <- 0 
+#begins a for loop that iterates from 1 to 9 in increments of 2
+for(x in seq(from = 1,to = 9, by = 2)) {
+  #add one to the counter and reassigns it to "itr"
+  itr <- itr + 1
+  #assigns the given equation to a variable "y"
+  y <- x/2 * exp(x/2)
+  
+  # COMMENT
+  df[itr, "x"] <- x
+  # COMMENT
+  df[itr, "y"] <- y
+}
+
+#prints "df" to check
+df
+```
+
+<br><br>
+
+****
+
+
+# Q3: Nested for loops
+
+3. Using nested for loops, calculate $y = 2x^2 \sqrt[\leftroot{-2}\uproot{2}3]{w},$ $x = 1, 2$ and $w = 3, 6, 9$. 
+
+We can accomplish this by adding the following lines of code to first confirm the correct values of $x$ and $w$.
+
+Loop over the rows and then the columns of the source (dirty) data frame.
+```{r}
+#set up a loop for the x-values
+for (x in 1:2){
+  #set up a loop for the w variable
+  #use the seq() function to skip numbers
+  for (w in seq(from = 3, to = 9, by = 3)){
+    print(c(x,w))
+  }
+}
+```
+
+
+Next, we can define a new variable within the nested loop.
+
+```{r}
+#set up a loop for the x-values
+for (x in 1:2){
+  #set up a loop for the w variable
+  #use the seq() function to skip numbers
+  for (w in seq(from = 3, to = 9, by = 3)){
+    #Define y using the equation above
+    #Use PEMDAS to determine order of operations
+    y <- 2 * x^2 * w^(1/3)
+    print(c(x,w,y))
+  }
+}
+```
+
+Finally, let's confirm our result using a data frame.  Compare the output of both to confirm they are equal.
+
+```{r}
+math_df <-
+  tibble(x = c(rep(1,3), rep(2,3)),
+         w = rep(seq(3,9,3), 2),
+         y = 2 * x^2 * w^(1/3))
+math_df
+```
+
+
+<br><br>
+
+******
+
+# Q4:  Filling data frames with nested for loops
+
+4.  Let's try to fill a data frame with the above values.  All we need to do is:
+
+- Determine how many rows (observations) and columns (variables) will be needed in the destination data frame.
+- Initialize an empty data frame with appropriate dimensions, to be filled.
+- Initialize a zero value iterator before the loops, then at the beginning of the inner loop, increment it by one.
+- Confirm that the iterator terminates with a value that matches the number of rows in the destination data frame.
+- Now, lets add the code to take the correct source value, and assign it to the appropriate destination value.
+
+
+**Determine how many rows (observations) and columns (variables) will be needed in the destination data frame.**
+
+Since the outer loop iterates two times `c(1, 2)` and the inner loop loops three times `c(3, 6, 9)`, the number of total iterations will be $2 \times 3 = 6$.
+
+**Initialize an empty data frame with appropriate dimensions, to be filled.**
+
+```{r}
+filled_df <- 
+  tibble(w=0L,x=0L,y=0,
+         .rows = 6)
+filled_df
+```
+
+**Initialize a zero value iterator before the loops, then at the beginning of the inner loop, increment it by one.**
+**Confirm that the iterator terminates with a value that matches the number of rows in the destination data frame.**
+
+```{r}
+# Initialize the destination iterator
+itr = 0
+for (x in 1:2) {
+  # Set up a loop for the w variable
+  # Use the seq() function to skip numbers
+  for (w in seq(from = 3, to = 9, by = 3)){
+    itr <- itr + 1
+    # Define y using the equation above
+    # Use PEMDAS to determine order of operations!!!
+    y <- 2 * x^2 * w^(1/3)
+    print(c(x, w, y, itr))
+  }
+}
+```
+
+
+**Now, lets add the code to take the correct source value, and assign it to the appropriate destination value.**
+
+```{r}
+itr = 0
+for (x in 1:2) {
+  # Set up a loop for the w variable
+  # Use the seq() function to skip numbers
+  for (w in seq(from = 3, to = 9, by = 3)){
+    itr <- itr + 1
+    # Define y using the equation above
+    # Use PEMDAS to determine order of operations!!!
+    y <- 2 * x^2 * w^(1/3)
+    filled_df[itr, "x"] <- x
+    filled_df[itr, "w"] <- w
+    filled_df[itr, "y"] <- y
+  }
+}
+filled_df
+```
+
+Now, to compare the results, the `all_equal` function has an argument `convert` which is set to `FALSE` by default (type `?all_equal` to see more).  This causes `all_equal` to not return `TRUE` if the values are all the same, yet the column **classes** differ in any way.  Changing `convert = FALSE` to `convert = TRUE` allows similar column classes (i.e. `numeric` and `integer`) will be considered the same by the `all_equal` function.
+
+```{r}
+all_equal(filled_df, math_df)
+```
+
+```{r}
+all_equal(filled_df, math_df, 
+          convert = TRUE)
+```
+
+
+<br><br>
+
+*******
+
+# Q5: Plotting
+
+5. Refer to the previous question.  Create a scatter plot of x versus y.
+
+```{r}
+plot(filled_df$x,filled_df$y,
+     main = "X vs Y",
+     ylab = "Y",
+     xlab = "X",
+     )
+```
+
+<br><br>
+
+*****
+
+# Q6: One more variable
+
+6. Copy-paste the previous loop, from question 4, and then modify the new copy of the program to calculate $z = y\sqrt{5x \ },$ for $x = 1,5,9,$ and $y = 1,3,5$ NOTE: `sqrt` is the square root function. For example, sqrt(x) yields $\sqrt{x}$.  
+
+```{r}
+# Initialize the destination iterator
+itr = 0
+for (x in seq(from = 1, to = 9, by = 4)){
+  # Set up a loop for the w variable
+  # Use the seq() function to skip numbers
+  for (y in seq(from = 1, to = 5, by = 2)){
+    itr <- itr + 1
+    # Define y using the equation above
+    # Use PEMDAS to determine order of operations!!!
+    z <- y*sqrt(5*x)
+    filled_df[itr, "x"] <- x
+    filled_df[itr, "y"] <- y
+    filled_df[itr, "z"] <- z
+  }
+}
+filled_df
+```
+
+<br><br>
+
+****
+
+# Q7:  Loop on your own
+
+7. (Your Turn!) Let $y = e^{−2n+1} \sqrt{3m}$ for $m = 1, 3, 5$ and $n = 1, 2, 3$. Use nested for-loops to generate the values of $m$ and $n$ and compute the values of $y$. Then, create an empty data frame and use the loops to fill it with the correct values.  
+```{r}
+#creates another data frame to fill
+another_filled_df <- 
+  tibble(w=0L,x=0L,y=0, 
+         .rows = 6)
+another_filled_df
+
+# Initialize the destination iterator
+itr = 0
+for (m in seq(from = 1, to = 5, by = 2)){
+  # Set up a loop for the w variable
+  # Use the seq() function to skip numbers
+  for (n in seq(from = 1, to = 3, by = 1)){
+    itr <- itr + 1
+    # Define y using the equation above
+    # Use PEMDAS to determine order of operations!!!
+    y <- exp(1)^(-2*n+1)*sqrt(3*m)
+   another_filled_df[itr, "m"] <- m
+   another_filled_df[itr, "n"] <- n
+   another_filled_df[itr, "y"] <- y
+  }
+}
+another_filled_df
+```
+
+<br><br>
+
+****
+
+
+# Q8: Chemical plant
+
+8. Four chemical plants producing the same product and owned by the same company, discharge effluents into streams in the vicinity of their locations. To check the extent of the pollution created by the effluents and to determine whether the amount of *polluting* effluents varies from plant to plant, the company collected random samples of liquid waste from each of the four plants. The data, in pounds per gallon of waste, is given in the table.
+
+Your first task is to read in the *un-tidy* data from the data file named "CHEM_PLANTS.dat".  Name the variable `dirty_plants`.
+
+```{r}
+dirty_plants <- read_table2("CHEM_PLANTS.dat")
+dirty_plants
+```
+
+Then:
+
+- Loop over the rows and then the columns of the source (dirty) data frame.
+- Confirm that you can access the values of the source data frame.
+- Determine how many rows (observations) and columns (variables) will be needed in the tidy, destination data frame.
+- Initialize an empty data frame to be filled with appropriate dimensions.
+- Initialize a zero value iterator before the loops, then at the beginning of the inner loop, increment it by one.
+- Confirm that the iterator terminates with a value that matches the number of rows in the destination data frame.
+- Now, lets add the code to take the currect source value, and assign it to the appropriate destination value.
+- Use control flow to conditionally assign the correct value to the next column, depending of the column (name) of the source DF. Do this step one value at a time.
+- Double check that your values are correct!!!
+
+<br><br>
+
+```{r}
+dirty_plants<-as.data.frame(dirty_plants)
+for(src_row in 1:10){
+  for(plant_col in 1:14){
+    print(c(src_row, plant_col, dirty_plants[src_row, plant_col]))
+  }
+}
+
+plants <- 
+  tibble(
+    plant=NA_character_,
+    effluence=NA_real_,
+    .rows=40)
+
+itr <- 0
+  for(src_row in 1:10){
+    for(plant_col in 1:4){
+      itr <- itr + 1
+      plants[itr, "effluence"] <- dirty_plants[src_row, plant_col]
+      if (plant_col == 1){
+        plants[itr, "plant"] <- "PlantA"
+      }else if (plant_col == 2){
+        plants[itr, "plant"] <- "PlantB"
+      }else if (plant_col == 3){
+        plants[itr, "plant"] <- "PlantC"
+      }else{
+        plants[itr, "plant"] <- "PlantD"
+      }
+    }
+  }
+dirty_plants
+plants
+```
+
+Now let's see if we did a good job by comparing the looping results with the result of `pivot_longer`.
+
+````{r}
+plants_pivot <-
+  pivot_longer(dirty_plants,
+               cols = everything(),
+               names_to = "plant",
+               values_to = "effluence")
+all_equal(plants, plants_pivot,
+          convert = TRUE)
+```
+
+
+
+<br><br>
+
+*****
+
+# Q9: Switch
+
+9. Try to achieve the above using the `switch()` function instead of `else-if` structure.
+
+```{r}
+for(plant_col in 1:4){
+  switch(plant_col,
+    "PLANT A",
+    "PLANT B",
+    "PLANT C",
+    "PLANT D"
+  )
+}
+```
+
+<br><br>
+
+**********
+
+
+# Q10: Grammar exercises
+
+10. Let's use the dplyr package to perform some manipulation of this data.  **<span style="color:green">Add comments to all of the code.</span>**
+
+<br><br>
+
+First, sort the data frame by `plant`.
+
+```{r}
+plants <-
+  plants %>%
+  arrange(plant)
+plants
+```
+
+
+Let's use the `group_by` and the `summarise` functions to calculate the sample mean for each plant. 
+
+
+```{r}
+plants %>%
+  group_by(plant) %>%
+  summarise(avg = mean(effluence))
+```
+
+Let's add a bit of code to also calculate the sample variance and standard deviation.
+
+```{r}
+plants %>%
+  group_by(plant) %>%
+  summarise(avg      = mean(effluence),
+            variance = var(effluence) , 
+            stddev   = sd(effluence)   )
+```
+
+Let's use the `mutate()` function to create a new column, which calculates the sampe standard deviation as the square root of the sample variance.
+
+```{r}
+plants %>%
+  group_by(plant) %>%
+  summarise(avg      = mean(effluence),
+            variance = var(effluence) , 
+            stddev   = sd(effluence)   ) %>%
+  mutate(stddev1 = sqrt(variance))
+```
+
+Let's check if the two calculated standard deviations are the same.
+
+
+```{r}
+plants %>%
+  group_by(plant) %>%
+  summarise(avg      = mean(effluence),
+            variance = var(effluence) , 
+            stddev   = sd(effluence)   ) %>%
+  mutate(stddev1 = sqrt(variance),
+         stddev_same = (stddev == stddev1))
+```
+
+
+OK, so we've summarized each plant.  Let's filter the data set so that we only have the observation for Plant B.  Assign the result to a variable named `only_b`.
+
+```{r}
+only_b <-
+  plants %>%
+  filter(plant == "PlantB")
+only_b
+```
+
+Let's filter the data set so that we only have the observation for Plant A and Plant C.  Assign the result to a variable named `both_AC`.
+
+```{r}
+both_AC <-
+  plants %>%
+  filter(plant == "PlantA" | plant == "PlantC")
+both_AC
+```
+
+Count the sample size, median, minimum, and the maximum of each plant in `both_AC`.  Do this using the summary function.
+
+```{r}
+both_AC %>%
+  group_by(plant) %>%
+  summarise(n = n(),
+            minimum = min(effluence),
+            median = quantile(effluence, 0.5),
+            maximum = max(effluence))
+```
+
+
+<br><br>
+
+*****
+
+
+# Q11: Dog-sled racing
+
+11. (Your turn!) Caleb, Delilah, and Evan have taken up dog-sled racing in hopes that someday they can enter The Iditarod Dog Sled Race in Alaska with Trusty Dusty, White Shadow and Lakota Dakota as their respective lead dogs. Since there is a lack of snow in Southern California, each have obtained a sled in which the runners (the "sled skis") have been replaced by wheels. Caleb, Delilah, and Evan race every day (not necessarily together) for 3 months and record their time to finish the course (in minutes). Linda does not believe there is a significant difference in mean finishing times between the three teams. To test this claim, Linda takes three independent random samples of 10 times for each of the three teams, yielding the following data:
+
+```{r}
+# READ IN DATA HERE
+```
+
+Read in the data and use nested for-loops to tidy it.  If you cannot do it with loops, feel free to use the `pivot_longer()` function. You'll need the result in the following question.
+
+
+# Q12: Grammar on your own
+
+12. Perform the following operations on the above, tidied data frame.
+
+\ \ (i) Sort the data set by dog team.
+
+```{r}
+# WRITE SOLUTION CODE HERE
+```
+
+\ \ (ii) Generate the sample mean, standard deviation and variance for each of the three dog teams.
+
+```{r}
+# WRITE SOLUTION CODE HERE
+```
+
+\ \ (iii) Create a new variable, called `onlyDusty`. Use the appropriate filter function call to restrict the data to the Trusty Dusty dog team and assign the result to `onlyDusty`. Be sure to print the data to confirm!
+
+```{r}
+# WRITE SOLUTION CODE HERE
+```
+
+\ \ (iv) Create a new variable, called `bothShadCody`.  Use the appropriate filter function call to restrict the data to the White Shadow and Lakota Dakota dog teams only and assign the result to `bothShadCody`. Be sure to print the data to confirm!
+
+```{r}
+# WRITE SOLUTION CODE HERE
+```
+
+\ \ (v) Using grammar functions from dplyr, find the fastest and the slowest race time for all 3 dogs.
+
+```{r}
+# WRITE SOLUTION CODE HERE
+```
+
+
+
+
